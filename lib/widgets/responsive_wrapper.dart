@@ -7,6 +7,8 @@ import 'package:bengkel_pro/pages/inventory_page.dart';
 import 'package:bengkel_pro/pages/cashier_page.dart';
 import 'package:bengkel_pro/pages/transaction_history_page.dart';
 import 'package:bengkel_pro/pages/settings_page.dart';
+import 'package:bengkel_pro/pages/customer_page.dart';
+import 'package:bengkel_pro/pages/service_management_page.dart';
 import 'package:bengkel_pro/widgets/dashboard_home.dart';
 
 class ResponsiveWrapper extends StatefulWidget {
@@ -22,6 +24,8 @@ class _ResponsiveWrapperState extends State<ResponsiveWrapper> {
   final List<Widget> _pages = [
     const DashboardHome(),
     const InventoryPage(),
+    const ServiceManagementPage(),
+    const CustomerPage(),
     const CashierPage(),
     const TransactionHistoryPage(),
     const SettingsPage(),
@@ -62,9 +66,11 @@ class _ResponsiveWrapperState extends State<ResponsiveWrapper> {
                   ),
                   _drawerItem(0, 'Dashboard', Icons.dashboard),
                   _drawerItem(1, 'Inventori', Icons.inventory_2),
-                  _drawerItem(2, 'Kasir', Icons.point_of_sale),
-                  _drawerItem(3, 'Riwayat', Icons.history),
-                  _drawerItem(4, 'Pengaturan', Icons.settings),
+                  _drawerItem(2, 'Jasa Servis', Icons.build),
+                  _drawerItem(3, 'Pelanggan', Icons.people),
+                  _drawerItem(4, 'Kasir', Icons.point_of_sale),
+                  _drawerItem(5, 'Riwayat', Icons.history),
+                  _drawerItem(6, 'Pengaturan', Icons.settings),
                 ],
               ),
             )
@@ -81,6 +87,8 @@ class _ResponsiveWrapperState extends State<ResponsiveWrapper> {
               destinations: const [
                 NavigationRailDestination(icon: Icon(Icons.dashboard_outlined), selectedIcon: Icon(Icons.dashboard), label: Text('Dashboard')),
                 NavigationRailDestination(icon: Icon(Icons.inventory_2_outlined), selectedIcon: Icon(Icons.inventory_2), label: Text('Inventori')),
+                NavigationRailDestination(icon: Icon(Icons.build_circle_outlined), selectedIcon: Icon(Icons.build_circle), label: Text('Jasa Servis')),
+                NavigationRailDestination(icon: Icon(Icons.people_outline), selectedIcon: Icon(Icons.people), label: Text('Pelanggan')),
                 NavigationRailDestination(icon: Icon(Icons.point_of_sale_outlined), selectedIcon: Icon(Icons.point_of_sale), label: Text('Kasir')),
                 NavigationRailDestination(icon: Icon(Icons.history_outlined), selectedIcon: Icon(Icons.history), label: Text('Riwayat')),
                 NavigationRailDestination(icon: Icon(Icons.settings_outlined), selectedIcon: Icon(Icons.settings), label: Text('Pengaturan')),
@@ -111,6 +119,8 @@ class _ResponsiveWrapperState extends State<ResponsiveWrapper> {
               destinations: const [
                 NavigationDestination(icon: Icon(Icons.dashboard_outlined), selectedIcon: Icon(Icons.dashboard), label: 'Dashboard'),
                 NavigationDestination(icon: Icon(Icons.inventory_2_outlined), selectedIcon: Icon(Icons.inventory_2), label: 'Inventori'),
+                NavigationDestination(icon: Icon(Icons.build_circle_outlined), selectedIcon: Icon(Icons.build_circle), label: 'Jasa'),
+                NavigationDestination(icon: Icon(Icons.people_outline), selectedIcon: Icon(Icons.people), label: 'Pelanggan'),
                 NavigationDestination(icon: Icon(Icons.point_of_sale_outlined), selectedIcon: Icon(Icons.point_of_sale), label: 'Kasir'),
               ],
             )

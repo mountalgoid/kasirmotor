@@ -132,4 +132,38 @@ class WorkshopProvider with ChangeNotifier {
     _customers.add(customer);
     notifyListeners();
   }
+
+  void updateCustomer(Customer updatedCustomer) {
+    final index = _customers.indexWhere((c) => c.id == updatedCustomer.id);
+    if (index >= 0) {
+      _customers[index] = updatedCustomer;
+      notifyListeners();
+    }
+  }
+
+  void deleteCustomer(String id) {
+    _customers.removeWhere((c) => c.id == id);
+    if (_selectedCustomer?.id == id) {
+      _selectedCustomer = null;
+    }
+    notifyListeners();
+  }
+
+  void addServiceItem(ServiceItem service) {
+    _services.add(service);
+    notifyListeners();
+  }
+
+  void updateServiceItem(ServiceItem updatedService) {
+    final index = _services.indexWhere((s) => s.id == updatedService.id);
+    if (index >= 0) {
+      _services[index] = updatedService;
+      notifyListeners();
+    }
+  }
+
+  void deleteServiceItem(String id) {
+    _services.removeWhere((s) => s.id == id);
+    notifyListeners();
+  }
 }
