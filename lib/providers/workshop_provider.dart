@@ -115,6 +115,19 @@ class WorkshopProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  void updateSparePart(SparePart updatedPart) {
+    final index = _spareParts.indexWhere((p) => p.id == updatedPart.id);
+    if (index >= 0) {
+      _spareParts[index] = updatedPart;
+      notifyListeners();
+    }
+  }
+
+  void deleteSparePart(String id) {
+    _spareParts.removeWhere((p) => p.id == id);
+    notifyListeners();
+  }
+
   void addCustomer(Customer customer) {
     _customers.add(customer);
     notifyListeners();
