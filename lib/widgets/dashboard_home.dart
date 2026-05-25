@@ -1,12 +1,28 @@
+import 'dart:io';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:fl_chart/fl_chart.dart';
 import '../providers/workshop_provider.dart';
 import '../models/transaction.dart';
 
-class DashboardHome extends StatelessWidget {
+class ChartData {
+  final String label;
+  final double amount;
+  ChartData(this.label, this.amount);
+}
+
+class DashboardHome extends StatefulWidget {
   const DashboardHome({super.key});
+
+  @override
+  State<DashboardHome> createState() => _DashboardHomeState();
+}
+
+class _DashboardHomeState extends State<DashboardHome> {
+  String _chartFilter = '1 Minggu';
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +51,7 @@ class DashboardHome extends StatelessWidget {
                 ),
                 if (!isMobile)
                   ElevatedButton.icon(
-                    onPressed: () {},
+                    onPressed: () => _downloadReport(provider),
                     icon: const Icon(Icons.download),
                     label: const Text('Unduh Laporan'),
                   ),
@@ -86,6 +102,8 @@ class DashboardHome extends StatelessWidget {
   }
 
   Widget _buildRevenueChart(BuildContext context, WorkshopProvider provider) {
+    final filteredData = _getFilteredChartData(provider.transactions);
+
     return Card(
       elevation: 0,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16), side: BorderSide(color: Colors.grey.withOpacity(0.2))),
@@ -94,40 +112,153 @@ class DashboardHome extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Grafik Pendapatan (7 Hari Terakhir)', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('Grafik Pendapatan ($_chartFilter)', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                DropdownButton<String>(
+                  value: _chartFilter,
+                  items: ['1 Hari', '1 Minggu', '1 Bulan', '1 Tahun'].map((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value, style: const TextStyle(fontSize: 12)),
+                    );
+                  }).toList(),
+                  onChanged: (val) {
+                    if (val != null) setState(() => _chartFilter = val);
+                  },
+                ),
+              ],
+            ),
             const SizedBox(height: 32),
             SizedBox(
               height: 250,
-              child: LineChart(
-                LineChartData(
-                  gridData: const FlGridData(show: false),
-                  titlesData: const FlTitlesData(show: false),
-                  borderData: FlBorderData(show: false),
-                  lineBarsData: [
-                    LineChartBarData(
-                      spots: const [
-                        FlSpot(0, 3),
-                        FlSpot(1, 1),
-                        FlSpot(2, 4),
-                        FlSpot(3, 2),
-                        FlSpot(4, 5),
-                        FlSpot(5, 3),
-                        FlSpot(6, 4),
-                      ],
-                      isCurved: true,
-                      color: Colors.blue,
-                      barWidth: 4,
-                      dotData: const FlDotData(show: false),
-                      belowBarData: BarAreaData(show: true, color: Colors.blue.withOpacity(0.1)),
+              child: filteredData.isEmpty
+                  ? const Center(child: Text('Data belum tersedia'))
+                  : LineChart(
+                      LineChartData(
+                        gridData: const FlGridData(show: false),
+                        titlesData: FlTitlesData(
+                          show: true,
+                          rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                          topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                          bottomTitles: AxisTitles(
+                            sideTitles: SideTitles(
+                              showTitles: true,
+                              getTitlesWidget: (value, meta) {
+                                if (filteredData.isEmpty) return const Text('');
+                                int index = value.toInt();
+                                if (index < 0 || index >= filteredData.length) return const Text('');
+                                return Padding(
+                                  padding: const EdgeInsets.only(top: 8.0),
+                                  child: Text(filteredData[index].label, style: const TextStyle(fontSize: 10)),
+                                );
+                              },
+                              reservedSize: 30,
+                            ),
+                          ),
+                        ),
+                        borderData: FlBorderData(show: false),
+                        lineBarsData: [
+                          LineChartBarData(
+                            spots: List.generate(filteredData.length, (i) => FlSpot(i.toDouble(), filteredData[i].amount)),
+                            isCurved: true,
+                            color: Colors.blue,
+                            barWidth: 4,
+                            dotData: const FlDotData(show: true),
+                            belowBarData: BarAreaData(show: true, color: Colors.blue.withOpacity(0.1)),
+                          ),
+                        ],
+                      ),
                     ),
-                  ],
-                ),
-              ),
             ),
           ],
         ),
       ),
     );
+  }
+
+  List<ChartData> _getFilteredChartData(List<Transaction> transactions) {
+    final now = DateTime.now();
+    List<ChartData> data = [];
+
+    if (_chartFilter == '1 Hari') {
+      // Group by hours (last 24 hours)
+      for (int i = 23; i >= 0; i--) {
+        final time = now.subtract(Duration(hours: i));
+        final amount = transactions
+            .where((tx) => tx.date.year == time.year && tx.date.month == time.month && tx.date.day == time.day && tx.date.hour == time.hour)
+            .fold(0.0, (sum, tx) => sum + tx.totalAmount);
+        data.add(ChartData(DateFormat('HH:00').format(time), amount));
+      }
+    } else if (_chartFilter == '1 Minggu') {
+      // Group by days (last 7 days)
+      for (int i = 6; i >= 0; i--) {
+        final date = now.subtract(Duration(days: i));
+        final amount = transactions
+            .where((tx) => tx.date.year == date.year && tx.date.month == date.month && tx.date.day == date.day)
+            .fold(0.0, (sum, tx) => sum + tx.totalAmount);
+        data.add(ChartData(DateFormat('dd/MM').format(date), amount));
+      }
+    } else if (_chartFilter == '1 Bulan') {
+      // Group by days (last 30 days)
+      for (int i = 29; i >= 0; i -= 3) {
+        final date = now.subtract(Duration(days: i));
+        final amount = transactions
+            .where((tx) => tx.date.isAfter(date.subtract(const Duration(days: 3))) && tx.date.isBefore(date.add(const Duration(seconds: 1))))
+            .fold(0.0, (sum, tx) => sum + tx.totalAmount);
+        data.add(ChartData(DateFormat('dd/MM').format(date), amount));
+      }
+    } else if (_chartFilter == '1 Tahun') {
+      // Group by months (last 12 months)
+      for (int i = 11; i >= 0; i--) {
+        final date = DateTime(now.year, now.month - i, 1);
+        final amount = transactions
+            .where((tx) => tx.date.year == date.year && tx.date.month == date.month)
+            .fold(0.0, (sum, tx) => sum + tx.totalAmount);
+        data.add(ChartData(DateFormat('MMM').format(date), amount));
+      }
+    }
+
+    return data;
+  }
+
+  Future<void> _downloadReport(WorkshopProvider provider) async {
+    String csv = 'ID Transaksi,Tanggal,Pelanggan,Total Tagihan,Metode Pembayaran\n';
+    final dateFormat = DateFormat('yyyy-MM-dd HH:mm');
+    for (var tx in provider.transactions) {
+      // Escape commas in names
+      final customerName = (tx.customer?.name ?? 'Umum').replaceAll(',', ' ');
+      csv += '${tx.id},${dateFormat.format(tx.date)},$customerName,${tx.totalAmount},${tx.paymentMethod == PaymentMethod.cash ? "Tunai" : "Transfer"}\n';
+    }
+
+    if (kIsWeb) {
+      // For web, printing to console as a fallback since dart:html is needed for real download
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Laporan berhasil dibuat (CSV) - Lihat Console'),
+          action: SnackBarAction(label: 'Print', onPressed: () => print(csv)),
+        ),
+      );
+    } else {
+      try {
+        final directory = await getApplicationDocumentsDirectory();
+        final path = '${directory.path}/laporan_bengkel_${DateFormat('yyyyMMdd').format(DateTime.now())}.csv';
+        final file = File(path);
+        await file.writeAsString(csv);
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Laporan disimpan di: $path'),
+            duration: const Duration(seconds: 5),
+          ),
+        );
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Gagal menyimpan laporan: $e')),
+        );
+      }
+    }
   }
 
   Widget _buildRecentTransactions(BuildContext context, WorkshopProvider provider, NumberFormat format) {

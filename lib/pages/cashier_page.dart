@@ -8,6 +8,11 @@ import 'package:bengkel_pro/models/transaction.dart';
 import 'package:bengkel_pro/models/customer.dart';
 import 'package:bengkel_pro/models/sparepart.dart';
 import 'package:bengkel_pro/models/service_item.dart';
+import 'dart:io';
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart' as pw;
+import 'package:printing/printing.dart';
 
 class CashierPage extends StatefulWidget {
   const CashierPage({super.key});
@@ -393,7 +398,12 @@ class _CashierPageState extends State<CashierPage> {
                       decoration: BoxDecoration(color: Colors.blue.withOpacity(0.05), borderRadius: BorderRadius.circular(12)),
                       child: Column(
                         children: [
-                          const Icon(Icons.qr_code_2, size: 80, color: Colors.blue),
+                          if (settings.qrisLocalPath != null && !kIsWeb)
+                            Image.file(File(settings.qrisLocalPath!), height: 200, errorBuilder: (_, __, ___) => const Icon(Icons.qr_code_2, size: 80, color: Colors.blue))
+                          else if (settings.qrisImageUrl.isNotEmpty)
+                            Image.network(settings.qrisImageUrl, height: 200, errorBuilder: (_, __, ___) => const Icon(Icons.qr_code_2, size: 80, color: Colors.blue))
+                          else
+                            const Icon(Icons.qr_code_2, size: 80, color: Colors.blue),
                           const SizedBox(height: 12),
                           Text(settings.bankName, style: const TextStyle(fontWeight: FontWeight.bold)),
                           Text(settings.bankAccountNumber, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blue)),
@@ -428,21 +438,98 @@ class _CashierPageState extends State<CashierPage> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Cetak Struk'),
-        content: const Column(
+        content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.print, size: 64, color: Colors.blue),
-            SizedBox(height: 16),
-            Text('Simulasi koneksi Bluetooth...'),
-            Text('Printer: Thermal-P80 (Terhubung)', style: TextStyle(fontSize: 12, color: Colors.green)),
+            const Icon(Icons.print, size: 64, color: Colors.blue),
+            const SizedBox(height: 16),
+            Text('Cetak struk untuk transaksi:'),
+            Text(tx.id.substring(0, 8), style: const TextStyle(fontWeight: FontWeight.bold)),
           ],
         ),
         actions: [
           TextButton(onPressed: () => Navigator.pop(context), child: const Text('Nanti')),
-          ElevatedButton(onPressed: () => Navigator.pop(context), child: const Text('Cetak Sekarang')),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+              _generateAndPrintReceipt(tx, context.read<SettingsProvider>());
+            },
+            child: const Text('Cetak Sekarang'),
+          ),
         ],
       ),
     );
+  }
+
+  Future<void> _generateAndPrintReceipt(Transaction tx, SettingsProvider settings) async {
+    final pdf = pw.Document();
+    final currencyFormat = NumberFormat.currency(locale: 'id', symbol: 'Rp ', decimalDigits: 0);
+
+    pdf.addPage(
+      pw.Page(
+        pageFormat: PdfPageFormat.roll80,
+        build: (pw.Context context) {
+          return pw.Column(
+            crossAxisAlignment: pw.CrossAxisAlignment.start,
+            children: [
+              pw.Center(
+                child: pw.Column(
+                  children: [
+                    pw.Text(settings.workshopName, style: pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 16)),
+                    pw.Text(settings.workshopAddress, style: const pw.TextStyle(fontSize: 10)),
+                    pw.Text(settings.workshopPhone, style: const pw.TextStyle(fontSize: 10)),
+                    pw.Divider(),
+                  ],
+                ),
+              ),
+              pw.SizedBox(height: 10),
+              pw.Text('ID: ${tx.id.substring(0, 8)}'),
+              pw.Text('Tgl: ${DateFormat('dd/MM/yy HH:mm').format(tx.date)}'),
+              pw.Text('Plgn: ${tx.customer?.name ?? "Umum"}'),
+              if (tx.customer != null) pw.Text('Plat: ${tx.customer!.plateNumber}'),
+              pw.Divider(),
+              pw.SizedBox(height: 10),
+              ...tx.items.map((item) => pw.Row(
+                    mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                    children: [
+                      pw.Expanded(child: pw.Text('${item.name} x${item.quantity}')),
+                      pw.Text(currencyFormat.format(item.total)),
+                    ],
+                  )),
+              pw.Divider(),
+              pw.Row(
+                mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                children: [
+                  pw.Text('TOTAL', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+                  pw.Text(currencyFormat.format(tx.totalAmount), style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+                ],
+              ),
+              pw.Row(
+                mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                children: [
+                  pw.Text('DIBAYAR (${tx.paymentMethod == PaymentMethod.cash ? "TUNAI" : "TRANSFER"})'),
+                  pw.Text(currencyFormat.format(tx.paidAmount)),
+                ],
+              ),
+              if (tx.paymentMethod == PaymentMethod.cash)
+                pw.Row(
+                  mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                  children: [
+                    pw.Text('KEMBALI'),
+                    pw.Text(currencyFormat.format(tx.change)),
+                  ],
+                ),
+              pw.SizedBox(height: 20),
+              pw.Center(
+                child: pw.Text('Terima Kasih Atas Kunjungan Anda', style: const pw.TextStyle(fontSize: 8, fontStyle: pw.FontStyle.italic)),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+
+    await Printing.layoutPdf(onLayout: (PdfPageFormat format) async => pdf.save());
   }
 
   Widget _buildChangeCalculation(double total) {

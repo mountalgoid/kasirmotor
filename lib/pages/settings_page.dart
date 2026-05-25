@@ -1,5 +1,8 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:provider/provider.dart';
+import 'package:image_picker/image_picker.dart';
 import '../providers/settings_provider.dart';
 
 class SettingsPage extends StatelessWidget {
@@ -70,12 +73,9 @@ class SettingsPage extends StatelessWidget {
               ListTile(
                 leading: const Icon(Icons.qr_code_scanner),
                 title: const Text('Gambar QRIS'),
-                subtitle: const Text('Atur gambar QRIS untuk pembayaran'),
-                trailing: const Icon(Icons.chevron_right),
-                onTap: () {
-                  // Placeholder for image picker
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Fitur pilih gambar akan segera hadir')));
-                },
+                subtitle: Text(settings.qrisLocalPath != null || settings.qrisImageUrl.isNotEmpty ? 'Sudah diatur' : 'Belum diatur'),
+                trailing: _buildQrisPreview(settings),
+                onTap: () => _showQrisOptions(context, settings),
               ),
             ],
           ),
@@ -99,6 +99,58 @@ class SettingsPage extends StatelessWidget {
     );
   }
 
+  Widget _buildQrisPreview(SettingsProvider settings) {
+    if (settings.qrisLocalPath != null && !kIsWeb) {
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(4),
+        child: Image.file(File(settings.qrisLocalPath!), width: 40, height: 40, fit: BoxFit.cover, errorBuilder: (_, __, ___) => const Icon(Icons.broken_image)),
+      );
+    } else if (settings.qrisImageUrl.isNotEmpty) {
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(4),
+        child: Image.network(settings.qrisImageUrl, width: 40, height: 40, fit: BoxFit.cover, errorBuilder: (_, __, ___) => const Icon(Icons.broken_image)),
+      );
+    }
+    return const Icon(Icons.chevron_right);
+  }
+
+  void _showQrisOptions(BuildContext context, SettingsProvider settings) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ListTile(
+            leading: const Icon(Icons.photo_library),
+            title: const Text('Pilih dari Galeri'),
+            onTap: () async {
+              Navigator.pop(context);
+              final ImagePicker picker = ImagePicker();
+              final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+              if (image != null) {
+                settings.updateSettings(qrisPath: image.path, qris: kIsWeb ? image.path : '');
+              }
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.link),
+            title: const Text('Masukkan URL Gambar'),
+            onTap: () {
+              Navigator.pop(context);
+              _showEditDialog(
+                context,
+                'URL Gambar QRIS',
+                settings.qrisImageUrl,
+                (val) => settings.updateSettings(qris: val, qrisPath: null),
+                hint: 'Masukkan URL gambar QRIS'
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildSettingItem(BuildContext context, String title, String value, IconData icon, VoidCallback onTap) {
     return ListTile(
       leading: Icon(icon),
@@ -109,13 +161,13 @@ class SettingsPage extends StatelessWidget {
     );
   }
 
-  void _showEditDialog(BuildContext context, String title, String initialValue, Function(String) onSave) {
+  void _showEditDialog(BuildContext context, String title, String initialValue, Function(String) onSave, {String? hint}) {
     final controller = TextEditingController(text: initialValue);
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: Text('Ubah $title'),
-        content: TextField(controller: controller, autofocus: true, decoration: InputDecoration(hintText: 'Masukkan $title baru')),
+        content: TextField(controller: controller, autofocus: true, decoration: InputDecoration(hintText: hint ?? 'Masukkan $title baru')),
         actions: [
           TextButton(onPressed: () => Navigator.pop(context), child: const Text('Batal')),
           ElevatedButton(onPressed: () { onSave(controller.text); Navigator.pop(context); }, child: const Text('Simpan')),
