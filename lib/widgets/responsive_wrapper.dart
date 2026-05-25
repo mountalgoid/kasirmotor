@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/workshop_provider.dart';
 import '../providers/theme_provider.dart';
-import 'dashboard_page.dart';
-import 'inventory_page.dart';
-import 'cashier_page.dart';
-import 'transaction_history_page.dart';
-import 'settings_page.dart';
+import '../pages/dashboard_page.dart';
+import '../pages/inventory_page.dart';
+import '../pages/cashier_page.dart';
+import '../pages/transaction_history_page.dart';
+import '../pages/settings_page.dart';
 
 class ResponsiveWrapper extends StatefulWidget {
   const ResponsiveWrapper({super.key});
