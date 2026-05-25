@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../providers/workshop_provider.dart';
-import '../providers/theme_provider.dart';
-import '../pages/dashboard_page.dart';
-import '../pages/inventory_page.dart';
-import '../pages/cashier_page.dart';
-import '../pages/transaction_history_page.dart';
-import '../pages/settings_page.dart';
+import 'package:bengkel_pro/providers/workshop_provider.dart';
+import 'package:bengkel_pro/providers/theme_provider.dart';
+import 'package:bengkel_pro/pages/dashboard_page.dart';
+import 'package:bengkel_pro/pages/inventory_page.dart';
+import 'package:bengkel_pro/pages/cashier_page.dart';
+import 'package:bengkel_pro/pages/transaction_history_page.dart';
+import 'package:bengkel_pro/pages/settings_page.dart';
 
 class ResponsiveWrapper extends StatefulWidget {
   const ResponsiveWrapper({super.key});

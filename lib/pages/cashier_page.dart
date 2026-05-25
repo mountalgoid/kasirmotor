@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
-import '../providers/workshop_provider.dart';
-import '../providers/settings_provider.dart';
-import '../models/transaction.dart';
-import '../models/customer.dart';
-import '../models/sparepart.dart';
-import '../models/service_item.dart';
+import 'package:bengkel_pro/providers/workshop_provider.dart';
+import 'package:bengkel_pro/providers/settings_provider.dart';
+import 'package:bengkel_pro/models/transaction.dart';
+import 'package:bengkel_pro/models/customer.dart';
+import 'package:bengkel_pro/models/sparepart.dart';
+import 'package:bengkel_pro/models/service_item.dart';
 
 class CashierPage extends StatefulWidget {
   const CashierPage({super.key});
