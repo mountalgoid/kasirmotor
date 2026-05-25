@@ -7,6 +7,7 @@ import 'package:bengkel_pro/pages/inventory_page.dart';
 import 'package:bengkel_pro/pages/cashier_page.dart';
 import 'package:bengkel_pro/pages/transaction_history_page.dart';
 import 'package:bengkel_pro/pages/settings_page.dart';
+import 'package:bengkel_pro/widgets/dashboard_home.dart';
 
 class ResponsiveWrapper extends StatefulWidget {
   const ResponsiveWrapper({super.key});
