@@ -267,16 +267,17 @@ class _CashierPageState extends State<CashierPage> {
     }
     return ListView.separated(
       itemCount: provider.cartItems.length,
-      separatorBuilder: (context, index) => const Divider(height: 24),
+      separatorBuilder: (context, index) => const Divider(height: 16),
       itemBuilder: (context, index) {
         final item = provider.cartItems[index];
         return Row(
+          key: ValueKey('${item.id}_${item.priceType}_${item.isService}'),
           children: [
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(item.name, style: const TextStyle(fontWeight: FontWeight.w600)),
+                  Text(item.name, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
                   if (item.isService)
                      Text('Kategori: ${item.priceType ?? "Umum"}', style: TextStyle(color: Colors.grey[500], fontSize: 10))
                   else ...[
@@ -287,30 +288,38 @@ class _CashierPageState extends State<CashierPage> {
                   ],
                   Text(
                     '${item.quantity}x ${format.format(item.price)}',
-                    style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                    style: TextStyle(color: Colors.grey[600], fontSize: 11),
                   ),
                 ],
               ),
             ),
-            Text(format.format(item.total), style: const TextStyle(fontWeight: FontWeight.bold)),
-            Row(
-              mainAxisSize: MainAxisSize.min,
+            const SizedBox(width: 8),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                IconButton(
-                  icon: const Icon(Icons.remove_circle_outline, color: Colors.red, size: 18),
-                  onPressed: () => provider.decreaseCartItemQuantity(index),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.add_circle_outline, color: Colors.green, size: 18),
-                  onPressed: () {
-                    if (item.isService) {
-                      final service = provider.services.firstWhere((s) => s.id == item.id);
-                      provider.addToCart(service);
-                    } else {
-                      final part = provider.spareParts.firstWhere((p) => p.id == item.id);
-                      provider.addToCart(part, priceType: item.priceType, customPrice: item.price);
-                    }
-                  },
+                Text(format.format(item.total), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.remove_circle_outline, color: Colors.red, size: 22),
+                      onPressed: () => provider.decreaseCartItemQuantity(index),
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(),
+                      splashRadius: 20,
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      child: Text('${item.quantity}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.add_circle_outline, color: Colors.green, size: 22),
+                      onPressed: () => provider.incrementCartItemQuantity(index),
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(),
+                      splashRadius: 20,
+                    ),
+                  ],
                 ),
               ],
             ),

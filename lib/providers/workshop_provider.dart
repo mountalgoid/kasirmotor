@@ -124,6 +124,22 @@ class WorkshopProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  void incrementCartItemQuantity(int index) {
+    if (index >= 0 && index < _cartItems.length) {
+      final item = _cartItems[index];
+      _cartItems[index] = TransactionItem(
+        id: item.id,
+        name: item.name,
+        price: item.price,
+        quantity: item.quantity + 1,
+        isService: item.isService,
+        priceType: item.priceType,
+        itemCode: item.itemCode,
+      );
+      notifyListeners();
+    }
+  }
+
   void decreaseCartItemQuantity(int index) {
     if (index >= 0 && index < _cartItems.length) {
       if (_cartItems[index].quantity > 1) {
