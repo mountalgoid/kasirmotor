@@ -71,31 +71,84 @@ class WorkshopProvider with ChangeNotifier {
   void addToCart(dynamic item, {int quantity = 1, String? priceType, double? customPrice}) {
     if (item is SparePart) {
       final price = customPrice ?? item.hargaEcer;
-      _cartItems.add(TransactionItem(
-        id: item.id,
-        name: item.name,
-        price: price,
-        quantity: quantity,
-        isService: false,
-        priceType: priceType ?? 'Ecer',
-        itemCode: item.code,
-      ));
+      final type = priceType ?? 'Ecer';
+
+      final index = _cartItems.indexWhere((i) => i.id == item.id && i.priceType == type && !i.isService);
+
+      if (index >= 0) {
+        final existingItem = _cartItems[index];
+        _cartItems[index] = TransactionItem(
+          id: existingItem.id,
+          name: existingItem.name,
+          price: existingItem.price,
+          quantity: existingItem.quantity + quantity,
+          isService: false,
+          priceType: existingItem.priceType,
+          itemCode: existingItem.itemCode,
+        );
+      } else {
+        _cartItems.add(TransactionItem(
+          id: item.id,
+          name: item.name,
+          price: price,
+          quantity: quantity,
+          isService: false,
+          priceType: type,
+          itemCode: item.code,
+        ));
+      }
     } else if (item is ServiceItem) {
-      _cartItems.add(TransactionItem(
-        id: item.id,
-        name: item.name,
-        price: item.price,
-        quantity: 1,
-        isService: true,
-        priceType: item.category,
-      ));
+      final index = _cartItems.indexWhere((i) => i.id == item.id && i.isService);
+
+      if (index >= 0) {
+        final existingItem = _cartItems[index];
+        _cartItems[index] = TransactionItem(
+          id: existingItem.id,
+          name: existingItem.name,
+          price: existingItem.price,
+          quantity: existingItem.quantity + 1,
+          isService: true,
+          priceType: existingItem.priceType,
+        );
+      } else {
+        _cartItems.add(TransactionItem(
+          id: item.id,
+          name: item.name,
+          price: item.price,
+          quantity: 1,
+          isService: true,
+          priceType: item.category,
+        ));
+      }
     }
     notifyListeners();
   }
 
+  void decreaseCartItemQuantity(int index) {
+    if (index >= 0 && index < _cartItems.length) {
+      if (_cartItems[index].quantity > 1) {
+        final item = _cartItems[index];
+        _cartItems[index] = TransactionItem(
+          id: item.id,
+          name: item.name,
+          price: item.price,
+          quantity: item.quantity - 1,
+          isService: item.isService,
+          priceType: item.priceType,
+          itemCode: item.itemCode,
+        );
+      } else {
+        _cartItems.removeAt(index);
+      }
+      notifyListeners();
+    }
+  }
+
   void removeFromCart(int index) {
-    _cartItems.removeAt(index);
-    notifyListeners();
+    if (index >= 0 && index < _cartItems.length) {
+      _cartItems.removeAt(index);
+      notifyListeners();
+    }
   }
 
   void clearCart() {

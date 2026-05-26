@@ -293,7 +293,27 @@ class _CashierPageState extends State<CashierPage> {
               ),
             ),
             Text(format.format(item.total), style: const TextStyle(fontWeight: FontWeight.bold)),
-            IconButton(icon: const Icon(Icons.remove_circle_outline, color: Colors.red, size: 18), onPressed: () => provider.removeFromCart(index)),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.remove_circle_outline, color: Colors.red, size: 18),
+                  onPressed: () => provider.decreaseCartItemQuantity(index),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.add_circle_outline, color: Colors.green, size: 18),
+                  onPressed: () {
+                    if (item.isService) {
+                      final service = provider.services.firstWhere((s) => s.id == item.id);
+                      provider.addToCart(service);
+                    } else {
+                      final part = provider.spareParts.firstWhere((p) => p.id == item.id);
+                      provider.addToCart(part, priceType: item.priceType, customPrice: item.price);
+                    }
+                  },
+                ),
+              ],
+            ),
           ],
         );
       },
@@ -583,7 +603,7 @@ class _CashierPageState extends State<CashierPage> {
                 ),
               pw.SizedBox(height: 20),
               pw.Center(
-                child: pw.Text('Terima Kasih Atas Kunjungan Anda', style: const pw.TextStyle(fontSize: 8, fontStyle: pw.FontStyle.italic)),
+                child: pw.Text('Terima Kasih Atas Kunjungan Anda', style: pw.TextStyle(fontSize: 8, fontStyle: pw.FontStyle.italic)),
               ),
             ],
           );

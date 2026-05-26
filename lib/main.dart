@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import 'providers/workshop_provider.dart';
 import 'providers/theme_provider.dart';
 import 'providers/settings_provider.dart';
-import 'pages/dashboard_page.dart';
+import 'pages/splash_screen.dart';
 
 void main() {
   runApp(const BengkelProApp());
@@ -43,7 +43,7 @@ class BengkelProApp extends StatelessWidget {
               ),
               textTheme: GoogleFonts.poppinsTextTheme(ThemeData.dark().textTheme),
             ),
-            home: const DashboardPage(),
+            home: const SplashScreen(),
           );
         },
       ),
