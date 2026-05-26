@@ -58,7 +58,7 @@ class WorkshopProvider with ChangeNotifier {
   final List<TransactionItem> _cartItems = [];
   Customer? _selectedCustomer;
 
-  List<TransactionItem> get cartItems => [..._cartItems];
+  List<TransactionItem> get cartItems => List.unmodifiable(_cartItems);
   Customer? get selectedCustomer => _selectedCustomer;
 
   double get cartTotal => _cartItems.fold(0, (sum, item) => sum + item.total);
@@ -106,7 +106,7 @@ class WorkshopProvider with ChangeNotifier {
           id: existingItem.id,
           name: existingItem.name,
           price: existingItem.price,
-          quantity: existingItem.quantity + 1,
+          quantity: existingItem.quantity + quantity,
           isService: true,
           priceType: existingItem.priceType,
         );
@@ -115,13 +115,29 @@ class WorkshopProvider with ChangeNotifier {
           id: item.id,
           name: item.name,
           price: item.price,
-          quantity: 1,
+          quantity: quantity,
           isService: true,
           priceType: item.category,
         ));
       }
     }
     notifyListeners();
+  }
+
+  void incrementCartItemQuantity(int index) {
+    if (index >= 0 && index < _cartItems.length) {
+      final item = _cartItems[index];
+      _cartItems[index] = TransactionItem(
+        id: item.id,
+        name: item.name,
+        price: item.price,
+        quantity: item.quantity + 1,
+        isService: item.isService,
+        priceType: item.priceType,
+        itemCode: item.itemCode,
+      );
+      notifyListeners();
+    }
   }
 
   void decreaseCartItemQuantity(int index) {

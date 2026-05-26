@@ -24,13 +24,13 @@ class BengkelProApp extends StatelessWidget {
       child: Consumer<ThemeProvider>(
         builder: (context, themeProvider, child) {
           return MaterialApp(
-            title: 'Bengkel Pro',
+            title: 'Ibrahim Part',
             debugShowCheckedModeBanner: false,
             themeMode: themeProvider.themeMode,
             theme: ThemeData(
               useMaterial3: true,
               colorScheme: ColorScheme.fromSeed(
-                seedColor: Colors.blueAccent,
+                seedColor: Colors.redAccent,
                 brightness: Brightness.light,
               ),
               textTheme: GoogleFonts.poppinsTextTheme(),
@@ -38,7 +38,7 @@ class BengkelProApp extends StatelessWidget {
             darkTheme: ThemeData(
               useMaterial3: true,
               colorScheme: ColorScheme.fromSeed(
-                seedColor: Colors.blueAccent,
+                seedColor: Colors.redAccent,
                 brightness: Brightness.dark,
               ),
               textTheme: GoogleFonts.poppinsTextTheme(ThemeData.dark().textTheme),

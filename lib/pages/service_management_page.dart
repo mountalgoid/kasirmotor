@@ -26,7 +26,7 @@ class _ServiceManagementPageState extends State<ServiceManagementPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Manajemen Jasa Servis'),
+        title: const Text('Jasa Servis Ibrahim Part'),
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 16.0),

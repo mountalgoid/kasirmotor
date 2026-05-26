@@ -50,7 +50,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.blueAccent,
+      backgroundColor: Colors.redAccent,
       body: Center(
         child: AnimatedBuilder(
           animation: _controller,
@@ -78,7 +78,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                       child: const Icon(
                         Icons.motorcycle,
                         size: 80,
-                        color: Colors.blueAccent,
+                        color: Colors.redAccent,
                       ),
                     ),
                     const SizedBox(height: 32),

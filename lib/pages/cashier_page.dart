@@ -44,7 +44,7 @@ class _CashierPageState extends State<CashierPage> {
 
     return Scaffold(
       appBar: isMobile ? null : AppBar(
-        title: const Text('Kasir Bengkel'),
+        title: const Text('Kasir Ibrahim Part'),
         actions: [
           IconButton(icon: const Icon(Icons.person_add_alt_1), onPressed: () => _showAddCustomerDialog(context)),
           IconButton(icon: const Icon(Icons.delete_sweep), onPressed: () => provider.clearCart()),
@@ -139,7 +139,7 @@ class _CashierPageState extends State<CashierPage> {
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.blue.withOpacity(0.2)),
+          border: Border.all(color: Colors.red.withOpacity(0.2)),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -147,7 +147,7 @@ class _CashierPageState extends State<CashierPage> {
             Text(service.name, style: const TextStyle(fontWeight: FontWeight.bold), maxLines: 1, overflow: TextOverflow.ellipsis),
             Text(service.category, style: TextStyle(fontSize: 10, color: Colors.grey[600])),
             const SizedBox(height: 4),
-            Text(format.format(service.price), style: const TextStyle(color: Colors.blue, fontWeight: FontWeight.bold)),
+            Text(format.format(service.price), style: const TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
           ],
         ),
       ),
@@ -160,7 +160,7 @@ class _CashierPageState extends State<CashierPage> {
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: isOutOfStock ? Colors.grey.withOpacity(0.2) : Colors.blue.withOpacity(0.1)),
+        side: BorderSide(color: isOutOfStock ? Colors.grey.withOpacity(0.2) : Colors.red.withOpacity(0.1)),
       ),
       child: InkWell(
         onTap: isOutOfStock ? null : () => _showPriceTypeSelector(context, part, format),
@@ -176,7 +176,7 @@ class _CashierPageState extends State<CashierPage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Flexible(child: Text(format.format(part.hargaEcer), style: TextStyle(color: isOutOfStock ? Colors.grey : Colors.blue, fontWeight: FontWeight.bold, fontSize: 13))),
+                  Flexible(child: Text(format.format(part.hargaEcer), style: TextStyle(color: isOutOfStock ? Colors.grey : Colors.red, fontWeight: FontWeight.bold, fontSize: 13))),
                   Text('Stok: ${part.stock}', style: TextStyle(color: isOutOfStock ? Colors.red : (part.stock < 5 ? Colors.orange : Colors.grey), fontSize: 10, fontWeight: FontWeight.bold)),
                 ],
               ),
@@ -215,7 +215,7 @@ class _CashierPageState extends State<CashierPage> {
   Widget _priceOption(BuildContext context, String label, double price, String type, SparePart part, NumberFormat format) {
     return ListTile(
       title: Text(label),
-      trailing: Text(format.format(price), style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.blue)),
+      trailing: Text(format.format(price), style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.red)),
       onTap: () {
         context.read<WorkshopProvider>().addToCart(part, priceType: type, customPrice: price);
         Navigator.pop(context);
@@ -249,7 +249,7 @@ class _CashierPageState extends State<CashierPage> {
             child: ElevatedButton(
               onPressed: provider.cartItems.isEmpty ? null : () => _showCheckoutDialog(context, provider),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue,
+                backgroundColor: Colors.red,
                 foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               ),
@@ -265,56 +265,90 @@ class _CashierPageState extends State<CashierPage> {
     if (provider.cartItems.isEmpty) {
       return Center(child: Text('Keranjang kosong', style: TextStyle(color: Colors.grey[400])));
     }
-    return ListView.separated(
+    return ListView.builder(
       itemCount: provider.cartItems.length,
-      separatorBuilder: (context, index) => const Divider(height: 24),
       itemBuilder: (context, index) {
         final item = provider.cartItems[index];
-        return Row(
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+        return Container(
+          margin: const EdgeInsets.only(bottom: 12),
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: 4,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(item.name, style: const TextStyle(fontWeight: FontWeight.w600)),
-                  if (item.isService)
-                     Text('Kategori: ${item.priceType ?? "Umum"}', style: TextStyle(color: Colors.grey[500], fontSize: 10))
-                  else ...[
-                    if (item.itemCode != null)
-                      Text('Kode: ${item.itemCode!}', style: TextStyle(color: Colors.grey[500], fontSize: 10)),
-                    if (item.priceType != null)
-                      Text('Tipe: ${item.priceType}', style: TextStyle(color: Colors.blue[300], fontSize: 10)),
-                  ],
+                  Expanded(
+                    child: Text(
+                      item.name,
+                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
                   Text(
-                    '${item.quantity}x ${format.format(item.price)}',
-                    style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                    format.format(item.total),
+                    style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.red),
                   ),
                 ],
               ),
-            ),
-            Text(format.format(item.total), style: const TextStyle(fontWeight: FontWeight.bold)),
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.remove_circle_outline, color: Colors.red, size: 18),
-                  onPressed: () => provider.decreaseCartItemQuantity(index),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.add_circle_outline, color: Colors.green, size: 18),
-                  onPressed: () {
-                    if (item.isService) {
-                      final service = provider.services.firstWhere((s) => s.id == item.id);
-                      provider.addToCart(service);
-                    } else {
-                      final part = provider.spareParts.firstWhere((p) => p.id == item.id);
-                      provider.addToCart(part, priceType: item.priceType, customPrice: item.price);
-                    }
-                  },
-                ),
-              ],
-            ),
-          ],
+              const SizedBox(height: 4),
+              Row(
+                children: [
+                  if (item.isService)
+                    Text('Jasa • ${item.priceType ?? "Umum"}', style: TextStyle(color: Colors.grey[500], fontSize: 10))
+                  else
+                    Text('${item.itemCode ?? "Part"} • ${item.priceType ?? "Ecer"}', style: TextStyle(color: Colors.grey[500], fontSize: 10)),
+                ],
+              ),
+              const Divider(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    format.format(item.price),
+                    style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                  ),
+                  Container(
+                    height: 36,
+                    decoration: BoxDecoration(
+                      color: Colors.red.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(18),
+                    ),
+                    child: Row(
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.remove, size: 18, color: Colors.red),
+                          onPressed: () => context.read<WorkshopProvider>().decreaseCartItemQuantity(index),
+                          splashRadius: 18,
+                        ),
+                        Text(
+                          '${item.quantity}',
+                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.add, size: 18, color: Colors.red),
+                          onPressed: () => context.read<WorkshopProvider>().incrementCartItemQuantity(index),
+                          splashRadius: 18,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         );
       },
     );
@@ -335,7 +369,7 @@ class _CashierPageState extends State<CashierPage> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             const Text('Total Pembayaran', style: TextStyle(fontWeight: FontWeight.bold)),
-            Text(format.format(provider.cartTotal), style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.blue)),
+            Text(format.format(provider.cartTotal), style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.red)),
           ],
         ),
       ],
@@ -360,9 +394,9 @@ class _CashierPageState extends State<CashierPage> {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.blue.withOpacity(0.05),
+        color: Colors.red.withOpacity(0.05),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.blue.withOpacity(0.1)),
+        border: Border.all(color: Colors.red.withOpacity(0.1)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -370,7 +404,7 @@ class _CashierPageState extends State<CashierPage> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('Pelanggan', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue)),
+              const Text('Pelanggan', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.red)),
               if (provider.selectedCustomer != null)
                 InkWell(onTap: () => provider.selectCustomer(null), child: const Icon(Icons.close, size: 16)),
             ],
@@ -397,30 +431,32 @@ class _CashierPageState extends State<CashierPage> {
       context: context,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
-      builder: (context) => Container(
-        height: MediaQuery.of(context).size.height * 0.7,
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          children: [
-            const Text('Keranjang Belanja', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 24),
-            Expanded(child: _buildCartItemsList(provider, format)),
-            const Divider(),
-            _buildTotalSection(provider, format),
-            const SizedBox(height: 24),
-            SizedBox(
-              width: double.infinity,
-              height: 56,
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                  _showCheckoutDialog(context, provider);
-                },
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.blue, foregroundColor: Colors.white, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
-                child: const Text('Lanjutkan Pembayaran'),
+      builder: (context) => Consumer<WorkshopProvider>(
+        builder: (context, provider, child) => Container(
+          height: MediaQuery.of(context).size.height * 0.7,
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            children: [
+              const Text('Keranjang Belanja', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 24),
+              Expanded(child: _buildCartItemsList(provider, format)),
+              const Divider(),
+              _buildTotalSection(provider, format),
+              const SizedBox(height: 24),
+              SizedBox(
+                width: double.infinity,
+                height: 56,
+                child: ElevatedButton(
+                  onPressed: provider.cartItems.isEmpty ? null : () {
+                    Navigator.pop(context);
+                    _showCheckoutDialog(context, provider);
+                  },
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.red, foregroundColor: Colors.white, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
+                  child: const Text('Lanjutkan Pembayaran'),
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -463,18 +499,18 @@ class _CashierPageState extends State<CashierPage> {
                   ] else ...[
                     Container(
                       padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(color: Colors.blue.withOpacity(0.05), borderRadius: BorderRadius.circular(12)),
+                      decoration: BoxDecoration(color: Colors.red.withOpacity(0.05), borderRadius: BorderRadius.circular(12)),
                       child: Column(
                         children: [
                           if (settings.qrisLocalPath != null && !kIsWeb)
-                            Image.file(File(settings.qrisLocalPath!), height: 200, errorBuilder: (_, __, ___) => const Icon(Icons.qr_code_2, size: 80, color: Colors.blue))
+                            Image.file(File(settings.qrisLocalPath!), height: 200, errorBuilder: (_, __, ___) => const Icon(Icons.qr_code_2, size: 80, color: Colors.red))
                           else if (settings.qrisImageUrl.isNotEmpty)
-                            Image.network(settings.qrisImageUrl, height: 200, errorBuilder: (_, __, ___) => const Icon(Icons.qr_code_2, size: 80, color: Colors.blue))
+                            Image.network(settings.qrisImageUrl, height: 200, errorBuilder: (_, __, ___) => const Icon(Icons.qr_code_2, size: 80, color: Colors.red))
                           else
-                            const Icon(Icons.qr_code_2, size: 80, color: Colors.blue),
+                            const Icon(Icons.qr_code_2, size: 80, color: Colors.red),
                           const SizedBox(height: 12),
                           Text(settings.bankName, style: const TextStyle(fontWeight: FontWeight.bold)),
-                          Text(settings.bankAccountNumber, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blue)),
+                          Text(settings.bankAccountNumber, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.red)),
                           Text('a.n. ${settings.bankAccountName}', style: const TextStyle(fontSize: 12)),
                         ],
                       ),
@@ -509,7 +545,7 @@ class _CashierPageState extends State<CashierPage> {
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.print, size: 64, color: Colors.blue),
+            const Icon(Icons.print, size: 64, color: Colors.red),
             const SizedBox(height: 16),
             Text('Cetak struk untuk transaksi:'),
             Text(tx.id.substring(0, 8), style: const TextStyle(fontWeight: FontWeight.bold)),

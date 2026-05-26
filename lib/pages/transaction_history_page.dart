@@ -28,10 +28,10 @@ class TransactionHistoryPage extends StatelessWidget {
                   margin: const EdgeInsets.only(bottom: 12),
                   child: ExpansionTile(
                     leading: CircleAvatar(
-                      backgroundColor: tx.paymentMethod == PaymentMethod.cash ? Colors.green.withOpacity(0.1) : Colors.blue.withOpacity(0.1),
+                      backgroundColor: tx.paymentMethod == PaymentMethod.cash ? Colors.green.withOpacity(0.1) : Colors.red.withOpacity(0.1),
                       child: Icon(
                         tx.paymentMethod == PaymentMethod.cash ? Icons.money : Icons.qr_code,
-                        color: tx.paymentMethod == PaymentMethod.cash ? Colors.green : Colors.blue,
+                        color: tx.paymentMethod == PaymentMethod.cash ? Colors.green : Colors.red,
                       ),
                     ),
                     title: Text(tx.customer?.name ?? 'Umum'),
@@ -69,7 +69,7 @@ class TransactionHistoryPage extends StatelessWidget {
                                               if (item.itemCode != null)
                                                 Text('Kode: ${item.itemCode!}', style: TextStyle(color: Colors.grey[500], fontSize: 10)),
                                               if (item.priceType != null)
-                                                Text('Tipe: ${item.priceType}', style: TextStyle(color: Colors.blue[300], fontSize: 10)),
+                                                Text('Tipe: ${item.priceType}', style: TextStyle(color: Colors.red[300], fontSize: 10)),
                                             ],
                                           ],
                                         ),
