@@ -44,7 +44,7 @@ class _CashierPageState extends State<CashierPage> {
 
     return Scaffold(
       appBar: isMobile ? null : AppBar(
-        title: const Text('Kasir Bengkel'),
+        title: const Text('Kasir Ibrahim Part'),
         actions: [
           IconButton(icon: const Icon(Icons.person_add_alt_1), onPressed: () => _showAddCustomerDialog(context)),
           IconButton(icon: const Icon(Icons.delete_sweep), onPressed: () => provider.clearCart()),
