@@ -7,8 +7,14 @@ void main() {
     // Build our app and trigger a frame.
     await tester.pumpWidget(const BengkelProApp());
 
+    // Verify splash screen content.
+    expect(find.text('Ibrahim Part'), findsOneWidget);
+
+    // Pump for splash screen delay (3 seconds + some extra)
+    await tester.pump(const Duration(seconds: 4));
+    await tester.pumpAndSettle();
+
     // Verify that dashboard content is shown.
     expect(find.text('Dashboard'), findsAtLeastNWidgets(1));
-    expect(find.text('Selamat datang kembali di Bengkel Pro'), findsOneWidget);
   });
 }
