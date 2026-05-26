@@ -58,7 +58,7 @@ class WorkshopProvider with ChangeNotifier {
   final List<TransactionItem> _cartItems = [];
   Customer? _selectedCustomer;
 
-  List<TransactionItem> get cartItems => [..._cartItems];
+  List<TransactionItem> get cartItems => List.unmodifiable(_cartItems);
   Customer? get selectedCustomer => _selectedCustomer;
 
   double get cartTotal => _cartItems.fold(0, (sum, item) => sum + item.total);

@@ -265,65 +265,90 @@ class _CashierPageState extends State<CashierPage> {
     if (provider.cartItems.isEmpty) {
       return Center(child: Text('Keranjang kosong', style: TextStyle(color: Colors.grey[400])));
     }
-    return ListView.separated(
+    return ListView.builder(
       itemCount: provider.cartItems.length,
-      separatorBuilder: (context, index) => const Divider(height: 16),
       itemBuilder: (context, index) {
         final item = provider.cartItems[index];
-        return Row(
-          key: ValueKey('${item.id}_${item.priceType}_${item.isService}'),
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+        return Container(
+          margin: const EdgeInsets.only(bottom: 12),
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: 4,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(item.name, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
-                  if (item.isService)
-                     Text('Kategori: ${item.priceType ?? "Umum"}', style: TextStyle(color: Colors.grey[500], fontSize: 10))
-                  else ...[
-                    if (item.itemCode != null)
-                      Text('Kode: ${item.itemCode!}', style: TextStyle(color: Colors.grey[500], fontSize: 10)),
-                    if (item.priceType != null)
-                      Text('Tipe: ${item.priceType}', style: TextStyle(color: Colors.blue[300], fontSize: 10)),
-                  ],
+                  Expanded(
+                    child: Text(
+                      item.name,
+                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
                   Text(
-                    '${item.quantity}x ${format.format(item.price)}',
-                    style: TextStyle(color: Colors.grey[600], fontSize: 11),
+                    format.format(item.total),
+                    style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
                   ),
                 ],
               ),
-            ),
-            const SizedBox(width: 8),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Text(format.format(item.total), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.remove_circle_outline, color: Colors.red, size: 22),
-                      onPressed: () => provider.decreaseCartItemQuantity(index),
-                      padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(),
-                      splashRadius: 20,
+              const SizedBox(height: 4),
+              Row(
+                children: [
+                  if (item.isService)
+                    Text('Jasa • ${item.priceType ?? "Umum"}', style: TextStyle(color: Colors.grey[500], fontSize: 10))
+                  else
+                    Text('${item.itemCode ?? "Part"} • ${item.priceType ?? "Ecer"}', style: TextStyle(color: Colors.grey[500], fontSize: 10)),
+                ],
+              ),
+              const Divider(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    format.format(item.price),
+                    style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                  ),
+                  Container(
+                    height: 36,
+                    decoration: BoxDecoration(
+                      color: Colors.blue.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(18),
                     ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8),
-                      child: Text('${item.quantity}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                    child: Row(
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.remove, size: 18, color: Colors.blue),
+                          onPressed: () => context.read<WorkshopProvider>().decreaseCartItemQuantity(index),
+                          splashRadius: 18,
+                        ),
+                        Text(
+                          '${item.quantity}',
+                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.add, size: 18, color: Colors.blue),
+                          onPressed: () => context.read<WorkshopProvider>().incrementCartItemQuantity(index),
+                          splashRadius: 18,
+                        ),
+                      ],
                     ),
-                    IconButton(
-                      icon: const Icon(Icons.add_circle_outline, color: Colors.green, size: 22),
-                      onPressed: () => provider.incrementCartItemQuantity(index),
-                      padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(),
-                      splashRadius: 20,
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ],
+                  ),
+                ],
+              ),
+            ],
+          ),
         );
       },
     );
