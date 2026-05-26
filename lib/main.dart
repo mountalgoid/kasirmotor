@@ -5,13 +5,21 @@ import 'providers/workshop_provider.dart';
 import 'providers/theme_provider.dart';
 import 'providers/settings_provider.dart';
 import 'pages/dashboard_page.dart';
+import 'pages/splash_screen.dart';
 
 void main() {
   runApp(const BengkelProApp());
 }
 
-class BengkelProApp extends StatelessWidget {
+class BengkelProApp extends StatefulWidget {
   const BengkelProApp({super.key});
+
+  @override
+  State<BengkelProApp> createState() => _BengkelProAppState();
+}
+
+class _BengkelProAppState extends State<BengkelProApp> {
+  bool _showSplash = true;
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +32,7 @@ class BengkelProApp extends StatelessWidget {
       child: Consumer<ThemeProvider>(
         builder: (context, themeProvider, child) {
           return MaterialApp(
-            title: 'Bengkel Pro',
+            title: 'Ibrahim Part',
             debugShowCheckedModeBanner: false,
             themeMode: themeProvider.themeMode,
             theme: ThemeData(
@@ -43,7 +51,9 @@ class BengkelProApp extends StatelessWidget {
               ),
               textTheme: GoogleFonts.poppinsTextTheme(ThemeData.dark().textTheme),
             ),
-            home: const DashboardPage(),
+            home: _showSplash
+                ? SplashScreen(onFinished: () => setState(() => _showSplash = false))
+                : const DashboardPage(),
           );
         },
       ),

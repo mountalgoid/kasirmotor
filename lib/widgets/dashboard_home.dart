@@ -46,7 +46,7 @@ class _DashboardHomeState extends State<DashboardHome> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text('Dashboard', style: Theme.of(context).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold)),
-                    Text('Selamat datang kembali di Bengkel Pro', style: TextStyle(color: Colors.grey[600])),
+                    Text('Selamat datang kembali di Ibrahim Part', style: TextStyle(color: Colors.grey[600])),
                   ],
                 ),
                 if (!isMobile)
