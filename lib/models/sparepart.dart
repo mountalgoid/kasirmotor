@@ -19,6 +19,28 @@ class SparePart {
     required this.code,
   });
 
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'name': name,
+    'hargaBeli': hargaBeli,
+    'hargaSales': hargaSales,
+    'hargaBengkel': hargaBengkel,
+    'hargaEcer': hargaEcer,
+    'stock': stock,
+    'code': code,
+  };
+
+  factory SparePart.fromJson(Map<String, dynamic> json) => SparePart(
+    id: json['id'],
+    name: json['name'],
+    hargaBeli: (json['hargaBeli'] as num).toDouble(),
+    hargaSales: (json['hargaSales'] as num).toDouble(),
+    hargaBengkel: (json['hargaBengkel'] as num).toDouble(),
+    hargaEcer: (json['hargaEcer'] as num).toDouble(),
+    stock: json['stock'] as int,
+    code: json['code'],
+  );
+
   SparePart copyWith({
     String? id,
     String? name,
