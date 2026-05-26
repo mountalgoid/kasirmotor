@@ -360,6 +360,23 @@ class _DashboardHomeState extends State<DashboardHome> {
     double transferRev = provider.transactions.where((t) => t.paymentMethod == PaymentMethod.transfer).fold(0, (sum, t) => sum + t.totalAmount);
     double totalProfit = provider.transactions.fold(0, (sum, t) => sum + t.totalProfit);
 
+    double serviceRev = 0;
+    double partRev = 0;
+    double serviceProfit = 0;
+    double partProfit = 0;
+
+    for (var tx in provider.transactions) {
+      for (var item in tx.items) {
+        if (item.isService) {
+          serviceRev += item.total;
+          serviceProfit += item.profit;
+        } else {
+          partRev += item.total;
+          partProfit += item.profit;
+        }
+      }
+    }
+
     showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
@@ -369,13 +386,23 @@ class _DashboardHomeState extends State<DashboardHome> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Detail Pendapatan', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const Text('Detail Pendapatan & Laba', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             const SizedBox(height: 24),
             _detailRow('Total Pendapatan Kotor', format.format(cashRev + transferRev), isBold: true),
-            _detailRow('Total Pendapatan Bersih (Laba)', format.format(totalProfit), color: Colors.green, isBold: true),
-            const Divider(height: 32),
-            _detailRow('Pembayaran Tunai', format.format(cashRev)),
-            _detailRow('Pembayaran Transfer/QRIS', format.format(transferRev)),
+            _detailRow('Total Pendapatan Bersih', format.format(totalProfit), color: Colors.green, isBold: true),
+            const Divider(height: 24),
+            const Text('Berdasarkan Kategori:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+            const SizedBox(height: 8),
+            _detailRow('Jasa Servis (Kotor)', format.format(serviceRev)),
+            _detailRow('Jasa Servis (Laba)', format.format(serviceProfit), color: Colors.green),
+            const SizedBox(height: 4),
+            _detailRow('Sparepart (Kotor)', format.format(partRev)),
+            _detailRow('Sparepart (Laba)', format.format(partProfit), color: Colors.green),
+            const Divider(height: 24),
+            const Text('Metode Pembayaran:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+            const SizedBox(height: 8),
+            _detailRow('Tunai', format.format(cashRev)),
+            _detailRow('Transfer/QRIS', format.format(transferRev)),
           ],
         ),
       ),
