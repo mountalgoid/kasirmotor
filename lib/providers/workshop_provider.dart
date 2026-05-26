@@ -7,16 +7,43 @@ import '../models/transaction.dart';
 
 class WorkshopProvider with ChangeNotifier {
   final List<SparePart> _spareParts = [
-    SparePart(id: '1', name: 'Oli MPX 2', price: 55000, stock: 20, code: 'OLI001'),
-    SparePart(id: '2', name: 'Kampas Rem Depan', price: 35000, stock: 15, code: 'BRK001'),
-    SparePart(id: '3', name: 'Ban Luar IRC 80/90-14', price: 185000, stock: 5, code: 'TYR001'),
+    SparePart(
+      id: '1',
+      name: 'Oli MPX 2',
+      hargaBeli: 45000,
+      hargaSales: 50000,
+      hargaBengkel: 52000,
+      hargaEcer: 55000,
+      stock: 20,
+      code: 'OLI001',
+    ),
+    SparePart(
+      id: '2',
+      name: 'Kampas Rem Depan',
+      hargaBeli: 25000,
+      hargaSales: 30000,
+      hargaBengkel: 32000,
+      hargaEcer: 35000,
+      stock: 15,
+      code: 'BRK001',
+    ),
+    SparePart(
+      id: '3',
+      name: 'Ban Luar IRC 80/90-14',
+      hargaBeli: 150000,
+      hargaSales: 170000,
+      hargaBengkel: 175000,
+      hargaEcer: 185000,
+      stock: 5,
+      code: 'TYR001',
+    ),
   ];
 
   final List<ServiceItem> _services = [
-    ServiceItem(id: '1', name: 'Servis Ringan', price: 45000),
-    ServiceItem(id: '2', name: 'Tune Up', price: 75000),
-    ServiceItem(id: '3', name: 'Ganti Oli', price: 10000),
-    ServiceItem(id: '4', name: 'Bongkar Mesin', price: 350000),
+    ServiceItem(id: '1', name: 'Servis Ringan', price: 45000, category: 'Servis'),
+    ServiceItem(id: '2', name: 'Tune Up', price: 75000, category: 'Servis'),
+    ServiceItem(id: '3', name: 'Ganti Oli', price: 10000, category: 'Jasa'),
+    ServiceItem(id: '4', name: 'Bongkar Mesin', price: 350000, category: 'Servis Berat'),
   ];
 
   final List<Customer> _customers = [];
@@ -41,26 +68,18 @@ class WorkshopProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void addToCart(dynamic item, {int quantity = 1}) {
+  void addToCart(dynamic item, {int quantity = 1, String? priceType, double? customPrice}) {
     if (item is SparePart) {
-      final existingIndex = _cartItems.indexWhere((element) => element.id == item.id && !element.isService);
-      if (existingIndex >= 0) {
-        _cartItems[existingIndex] = TransactionItem(
-          id: item.id,
-          name: item.name,
-          price: item.price,
-          quantity: _cartItems[existingIndex].quantity + quantity,
-          isService: false,
-        );
-      } else {
-        _cartItems.add(TransactionItem(
-          id: item.id,
-          name: item.name,
-          price: item.price,
-          quantity: quantity,
-          isService: false,
-        ));
-      }
+      final price = customPrice ?? item.hargaEcer;
+      _cartItems.add(TransactionItem(
+        id: item.id,
+        name: item.name,
+        price: price,
+        quantity: quantity,
+        isService: false,
+        priceType: priceType ?? 'Ecer',
+        itemCode: item.code,
+      ));
     } else if (item is ServiceItem) {
       _cartItems.add(TransactionItem(
         id: item.id,
@@ -68,6 +87,7 @@ class WorkshopProvider with ChangeNotifier {
         price: item.price,
         quantity: 1,
         isService: true,
+        priceType: item.category,
       ));
     }
     notifyListeners();

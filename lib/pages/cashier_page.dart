@@ -145,6 +145,7 @@ class _CashierPageState extends State<CashierPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(service.name, style: const TextStyle(fontWeight: FontWeight.bold), maxLines: 1, overflow: TextOverflow.ellipsis),
+            Text(service.category, style: TextStyle(fontSize: 10, color: Colors.grey[600])),
             const SizedBox(height: 4),
             Text(format.format(service.price), style: const TextStyle(color: Colors.blue, fontWeight: FontWeight.bold)),
           ],
@@ -162,7 +163,7 @@ class _CashierPageState extends State<CashierPage> {
         side: BorderSide(color: isOutOfStock ? Colors.grey.withOpacity(0.2) : Colors.blue.withOpacity(0.1)),
       ),
       child: InkWell(
-        onTap: isOutOfStock ? null : () => context.read<WorkshopProvider>().addToCart(part),
+        onTap: isOutOfStock ? null : () => _showPriceTypeSelector(context, part, format),
         borderRadius: BorderRadius.circular(12),
         child: Padding(
           padding: const EdgeInsets.all(12),
@@ -175,7 +176,7 @@ class _CashierPageState extends State<CashierPage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Flexible(child: Text(format.format(part.price), style: TextStyle(color: isOutOfStock ? Colors.grey : Colors.blue, fontWeight: FontWeight.bold, fontSize: 13))),
+                  Flexible(child: Text(format.format(part.hargaEcer), style: TextStyle(color: isOutOfStock ? Colors.grey : Colors.blue, fontWeight: FontWeight.bold, fontSize: 13))),
                   Text('Stok: ${part.stock}', style: TextStyle(color: isOutOfStock ? Colors.red : (part.stock < 5 ? Colors.orange : Colors.grey), fontSize: 10, fontWeight: FontWeight.bold)),
                 ],
               ),
@@ -183,6 +184,42 @@ class _CashierPageState extends State<CashierPage> {
           ),
         ),
       ),
+    );
+  }
+
+  void _showPriceTypeSelector(BuildContext context, SparePart part, NumberFormat format) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
+      builder: (context) => Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(part.name, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            Text(part.code, style: TextStyle(color: Colors.grey[600])),
+            const SizedBox(height: 24),
+            const Text('Pilih Tipe Harga:', style: TextStyle(fontWeight: FontWeight.bold)),
+            const SizedBox(height: 12),
+            _priceOption(context, 'Harga Ecer', part.hargaEcer, 'Ecer', part, format),
+            _priceOption(context, 'Harga Bengkel', part.hargaBengkel, 'Bengkel', part, format),
+            _priceOption(context, 'Harga Sales', part.hargaSales, 'Sales', part, format),
+            _priceOption(context, 'Harga Beli', part.hargaBeli, 'Beli', part, format),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _priceOption(BuildContext context, String label, double price, String type, SparePart part, NumberFormat format) {
+    return ListTile(
+      title: Text(label),
+      trailing: Text(format.format(price), style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.blue)),
+      onTap: () {
+        context.read<WorkshopProvider>().addToCart(part, priceType: type, customPrice: price);
+        Navigator.pop(context);
+      },
     );
   }
 
@@ -240,7 +277,18 @@ class _CashierPageState extends State<CashierPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(item.name, style: const TextStyle(fontWeight: FontWeight.w600)),
-                  Text('${item.quantity}x ${format.format(item.price)}', style: TextStyle(color: Colors.grey[600], fontSize: 12)),
+                  if (item.isService)
+                     Text('Kategori: ${item.priceType ?? "Umum"}', style: TextStyle(color: Colors.grey[500], fontSize: 10))
+                  else ...[
+                    if (item.itemCode != null)
+                      Text('Kode: ${item.itemCode!}', style: TextStyle(color: Colors.grey[500], fontSize: 10)),
+                    if (item.priceType != null)
+                      Text('Tipe: ${item.priceType}', style: TextStyle(color: Colors.blue[300], fontSize: 10)),
+                  ],
+                  Text(
+                    '${item.quantity}x ${format.format(item.price)}',
+                    style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                  ),
                 ],
               ),
             ),
@@ -489,11 +537,25 @@ class _CashierPageState extends State<CashierPage> {
               if (tx.customer != null) pw.Text('Plat: ${tx.customer!.plateNumber}'),
               pw.Divider(),
               pw.SizedBox(height: 10),
-              ...tx.items.map((item) => pw.Row(
-                    mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+              ...tx.items.map((item) => pw.Column(
+                    crossAxisAlignment: pw.CrossAxisAlignment.start,
                     children: [
-                      pw.Expanded(child: pw.Text('${item.name} x${item.quantity}')),
-                      pw.Text(currencyFormat.format(item.total)),
+                      pw.Row(
+                        mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                        children: [
+                          pw.Expanded(child: pw.Text('${item.name} x${item.quantity}')),
+                          pw.Text(currencyFormat.format(item.total)),
+                        ],
+                      ),
+                      if (item.isService)
+                        pw.Text('Kategori: ${item.priceType ?? "Umum"}', style: const pw.TextStyle(fontSize: 8))
+                      else ...[
+                        if (item.itemCode != null)
+                          pw.Text('Kode: ${item.itemCode!}', style: const pw.TextStyle(fontSize: 8)),
+                        if (item.priceType != null)
+                          pw.Text('Tipe: ${item.priceType}', style: const pw.TextStyle(fontSize: 8)),
+                      ],
+                      pw.SizedBox(height: 4),
                     ],
                   )),
               pw.Divider(),

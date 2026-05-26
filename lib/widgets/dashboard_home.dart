@@ -224,12 +224,21 @@ class _DashboardHomeState extends State<DashboardHome> {
   }
 
   Future<void> _downloadReport(WorkshopProvider provider) async {
-    String csv = 'ID Transaksi,Tanggal,Pelanggan,Total Tagihan,Metode Pembayaran\n';
+    String csv = 'ID Transaksi,Tanggal,Pelanggan,Total Tagihan,Metode Pembayaran,Item Terjual\n';
     final dateFormat = DateFormat('yyyy-MM-dd HH:mm');
     for (var tx in provider.transactions) {
       // Escape commas in names
       final customerName = (tx.customer?.name ?? 'Umum').replaceAll(',', ' ');
-      csv += '${tx.id},${dateFormat.format(tx.date)},$customerName,${tx.totalAmount},${tx.paymentMethod == PaymentMethod.cash ? "Tunai" : "Transfer"}\n';
+
+      String itemsStr = tx.items.map((i) {
+        String detail = i.name;
+        if (i.itemCode != null) detail += ' [${i.itemCode}]';
+        if (i.priceType != null) detail += ' (${i.priceType})';
+        return detail;
+      }).join(' | ');
+      itemsStr = '"$itemsStr"'; // Quote to handle commas/pipes in details
+
+      csv += '${tx.id},${dateFormat.format(tx.date)},$customerName,${tx.totalAmount},${tx.paymentMethod == PaymentMethod.cash ? "Tunai" : "Transfer"},$itemsStr\n';
     }
 
     if (kIsWeb) {

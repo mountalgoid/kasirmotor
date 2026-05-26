@@ -95,12 +95,18 @@ class _InventoryPageState extends State<InventoryPage> {
               child: Card(
                 clipBehavior: Clip.antiAlias,
                 child: SingleChildScrollView(
-                  child: DataTable(
+                  scrollDirection: Axis.vertical,
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: DataTable(
                     columnSpacing: 24,
                     columns: const [
                       DataColumn(label: Text('Kode')),
                       DataColumn(label: Text('Nama Barang')),
-                      DataColumn(label: Text('Harga')),
+                      DataColumn(label: Text('Hrg Beli')),
+                      DataColumn(label: Text('Hrg Sales')),
+                      DataColumn(label: Text('Hrg Bengkel')),
+                      DataColumn(label: Text('Hrg Ecer')),
                       DataColumn(label: Text('Stok')),
                       DataColumn(label: Text('Status')),
                       DataColumn(label: Text('Aksi')),
@@ -112,7 +118,10 @@ class _InventoryPageState extends State<InventoryPage> {
                       return DataRow(cells: [
                         DataCell(Text(part.code)),
                         DataCell(Text(part.name)),
-                        DataCell(Text(currencyFormat.format(part.price))),
+                        DataCell(Text(currencyFormat.format(part.hargaBeli))),
+                        DataCell(Text(currencyFormat.format(part.hargaSales))),
+                        DataCell(Text(currencyFormat.format(part.hargaBengkel))),
+                        DataCell(Text(currencyFormat.format(part.hargaEcer))),
                         DataCell(Text(part.stock.toString())),
                         DataCell(
                           Container(
@@ -151,6 +160,7 @@ class _InventoryPageState extends State<InventoryPage> {
                         ),
                       ]);
                     }).toList(),
+                    ),
                   ),
                 ),
               ),
@@ -163,7 +173,10 @@ class _InventoryPageState extends State<InventoryPage> {
 
   void _showPartDialog(BuildContext context, {SparePart? part}) {
     final nameController = TextEditingController(text: part?.name);
-    final priceController = TextEditingController(text: part?.price.toStringAsFixed(0));
+    final hargaBeliController = TextEditingController(text: part?.hargaBeli.toStringAsFixed(0));
+    final hargaSalesController = TextEditingController(text: part?.hargaSales.toStringAsFixed(0));
+    final hargaBengkelController = TextEditingController(text: part?.hargaBengkel.toStringAsFixed(0));
+    final hargaEcerController = TextEditingController(text: part?.hargaEcer.toStringAsFixed(0));
     final stockController = TextEditingController(text: part?.stock.toString());
     final codeController = TextEditingController(text: part?.code);
 
@@ -171,30 +184,41 @@ class _InventoryPageState extends State<InventoryPage> {
       context: context,
       builder: (context) => AlertDialog(
         title: Text(part == null ? 'Tambah Sparepart Baru' : 'Edit Sparepart'),
-        content: SizedBox(
-          width: 400,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(controller: codeController, decoration: const InputDecoration(labelText: 'Kode Barang')),
-              const SizedBox(height: 8),
-              TextField(controller: nameController, decoration: const InputDecoration(labelText: 'Nama Barang')),
-              const SizedBox(height: 8),
-              TextField(controller: priceController, decoration: const InputDecoration(labelText: 'Harga Jual'), keyboardType: TextInputType.number),
-              const SizedBox(height: 8),
-              TextField(controller: stockController, decoration: const InputDecoration(labelText: 'Stok'), keyboardType: TextInputType.number),
-            ],
+        content: SingleChildScrollView(
+          child: SizedBox(
+            width: 400,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(controller: codeController, decoration: const InputDecoration(labelText: 'Kode Barang')),
+                const SizedBox(height: 8),
+                TextField(controller: nameController, decoration: const InputDecoration(labelText: 'Nama Barang')),
+                const SizedBox(height: 8),
+                TextField(controller: hargaBeliController, decoration: const InputDecoration(labelText: 'Harga Beli'), keyboardType: TextInputType.number),
+                const SizedBox(height: 8),
+                TextField(controller: hargaSalesController, decoration: const InputDecoration(labelText: 'Harga Sales'), keyboardType: TextInputType.number),
+                const SizedBox(height: 8),
+                TextField(controller: hargaBengkelController, decoration: const InputDecoration(labelText: 'Harga Bengkel'), keyboardType: TextInputType.number),
+                const SizedBox(height: 8),
+                TextField(controller: hargaEcerController, decoration: const InputDecoration(labelText: 'Harga Ecer'), keyboardType: TextInputType.number),
+                const SizedBox(height: 8),
+                TextField(controller: stockController, decoration: const InputDecoration(labelText: 'Stok'), keyboardType: TextInputType.number),
+              ],
+            ),
           ),
         ),
         actions: [
           TextButton(onPressed: () => Navigator.pop(context), child: const Text('Batal')),
           ElevatedButton(
             onPressed: () {
-              if (nameController.text.isNotEmpty && priceController.text.isNotEmpty) {
+              if (nameController.text.isNotEmpty) {
                 final newPart = SparePart(
                   id: part?.id ?? DateTime.now().millisecondsSinceEpoch.toString(),
                   name: nameController.text,
-                  price: double.tryParse(priceController.text) ?? 0,
+                  hargaBeli: double.tryParse(hargaBeliController.text) ?? 0,
+                  hargaSales: double.tryParse(hargaSalesController.text) ?? 0,
+                  hargaBengkel: double.tryParse(hargaBengkelController.text) ?? 0,
+                  hargaEcer: double.tryParse(hargaEcerController.text) ?? 0,
                   stock: int.tryParse(stockController.text) ?? 0,
                   code: codeController.text,
                 );
