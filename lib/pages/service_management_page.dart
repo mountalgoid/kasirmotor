@@ -55,8 +55,11 @@ class _ServiceManagementPageState extends State<ServiceManagementPage> {
               child: Card(
                 clipBehavior: Clip.antiAlias,
                 child: SingleChildScrollView(
-                  child: DataTable(
-                    columns: const [
+                  scrollDirection: Axis.vertical,
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: DataTable(
+                      columns: const [
                       DataColumn(label: Text('Nama Jasa')),
                       DataColumn(label: Text('Kategori')),
                       DataColumn(label: Text('Harga')),
@@ -83,6 +86,7 @@ class _ServiceManagementPageState extends State<ServiceManagementPage> {
                         ),
                       ],
                     )).toList(),
+                    ),
                   ),
                 ),
               ),

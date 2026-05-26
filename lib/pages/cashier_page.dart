@@ -293,7 +293,32 @@ class _CashierPageState extends State<CashierPage> {
               ),
             ),
             Text(format.format(item.total), style: const TextStyle(fontWeight: FontWeight.bold)),
-            IconButton(icon: const Icon(Icons.remove_circle_outline, color: Colors.red, size: 18), onPressed: () => provider.removeFromCart(index)),
+            const SizedBox(width: 8),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.remove_circle_outline, color: Colors.orange, size: 20),
+                  onPressed: () => provider.updateCartItemQuantity(index, -1),
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
+                ),
+                const SizedBox(width: 8),
+                IconButton(
+                  icon: const Icon(Icons.add_circle_outline, color: Colors.blue, size: 20),
+                  onPressed: () => provider.updateCartItemQuantity(index, 1),
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
+                ),
+                const SizedBox(width: 8),
+                IconButton(
+                  icon: const Icon(Icons.delete_outline, color: Colors.red, size: 20),
+                  onPressed: () => provider.removeFromCart(index),
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
+                ),
+              ],
+            ),
           ],
         );
       },

@@ -98,6 +98,28 @@ class WorkshopProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  void updateCartItemQuantity(int index, int delta) {
+    if (index >= 0 && index < _cartItems.length) {
+      final item = _cartItems[index];
+      final newQuantity = item.quantity + delta;
+
+      if (newQuantity <= 0) {
+        _cartItems.removeAt(index);
+      } else {
+        _cartItems[index] = TransactionItem(
+          id: item.id,
+          name: item.name,
+          price: item.price,
+          quantity: newQuantity,
+          isService: item.isService,
+          priceType: item.priceType,
+          itemCode: item.itemCode,
+        );
+      }
+      notifyListeners();
+    }
+  }
+
   void clearCart() {
     _cartItems.clear();
     _selectedCustomer = null;
