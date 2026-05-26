@@ -70,25 +70,54 @@ class WorkshopProvider with ChangeNotifier {
 
   void addToCart(dynamic item, {int quantity = 1, String? priceType, double? customPrice}) {
     if (item is SparePart) {
-      final price = customPrice ?? item.hargaEcer;
-      _cartItems.add(TransactionItem(
-        id: item.id,
-        name: item.name,
-        price: price,
-        quantity: quantity,
-        isService: false,
-        priceType: priceType ?? 'Ecer',
-        itemCode: item.code,
-      ));
+      final type = priceType ?? 'Ecer';
+      final existingIndex = _cartItems.indexWhere((element) => element.id == item.id && !element.isService && element.priceType == type);
+
+      if (existingIndex >= 0) {
+        final existingItem = _cartItems[existingIndex];
+        _cartItems[existingIndex] = TransactionItem(
+          id: existingItem.id,
+          name: existingItem.name,
+          price: existingItem.price,
+          quantity: existingItem.quantity + quantity,
+          isService: false,
+          priceType: existingItem.priceType,
+          itemCode: existingItem.itemCode,
+        );
+      } else {
+        final price = customPrice ?? item.hargaEcer;
+        _cartItems.add(TransactionItem(
+          id: item.id,
+          name: item.name,
+          price: price,
+          quantity: quantity,
+          isService: false,
+          priceType: type,
+          itemCode: item.code,
+        ));
+      }
     } else if (item is ServiceItem) {
-      _cartItems.add(TransactionItem(
-        id: item.id,
-        name: item.name,
-        price: item.price,
-        quantity: 1,
-        isService: true,
-        priceType: item.category,
-      ));
+      final existingIndex = _cartItems.indexWhere((element) => element.id == item.id && element.isService);
+      if (existingIndex >= 0) {
+        final existingItem = _cartItems[existingIndex];
+        _cartItems[existingIndex] = TransactionItem(
+          id: existingItem.id,
+          name: existingItem.name,
+          price: existingItem.price,
+          quantity: existingItem.quantity + 1,
+          isService: true,
+          priceType: existingItem.priceType,
+        );
+      } else {
+        _cartItems.add(TransactionItem(
+          id: item.id,
+          name: item.name,
+          price: item.price,
+          quantity: 1,
+          isService: true,
+          priceType: item.category,
+        ));
+      }
     }
     notifyListeners();
   }

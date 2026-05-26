@@ -298,24 +298,19 @@ class _CashierPageState extends State<CashierPage> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 IconButton(
-                  icon: const Icon(Icons.remove_circle_outline, color: Colors.orange, size: 20),
+                  icon: const Icon(Icons.remove_circle_outline, color: Colors.orange, size: 24),
                   onPressed: () => provider.updateCartItemQuantity(index, -1),
-                  padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(),
+                  tooltip: 'Kurangi',
                 ),
-                const SizedBox(width: 8),
                 IconButton(
-                  icon: const Icon(Icons.add_circle_outline, color: Colors.blue, size: 20),
+                  icon: const Icon(Icons.add_circle_outline, color: Colors.blue, size: 24),
                   onPressed: () => provider.updateCartItemQuantity(index, 1),
-                  padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(),
+                  tooltip: 'Tambah',
                 ),
-                const SizedBox(width: 8),
                 IconButton(
-                  icon: const Icon(Icons.delete_outline, color: Colors.red, size: 20),
+                  icon: const Icon(Icons.delete_outline, color: Colors.red, size: 24),
                   onPressed: () => provider.removeFromCart(index),
-                  padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(),
+                  tooltip: 'Hapus',
                 ),
               ],
             ),
@@ -402,30 +397,32 @@ class _CashierPageState extends State<CashierPage> {
       context: context,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
-      builder: (context) => Container(
-        height: MediaQuery.of(context).size.height * 0.7,
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          children: [
-            const Text('Keranjang Belanja', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 24),
-            Expanded(child: _buildCartItemsList(provider, format)),
-            const Divider(),
-            _buildTotalSection(provider, format),
-            const SizedBox(height: 24),
-            SizedBox(
-              width: double.infinity,
-              height: 56,
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                  _showCheckoutDialog(context, provider);
-                },
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.blue, foregroundColor: Colors.white, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
-                child: const Text('Lanjutkan Pembayaran'),
+      builder: (context) => Consumer<WorkshopProvider>(
+        builder: (context, updatedProvider, child) => Container(
+          height: MediaQuery.of(context).size.height * 0.7,
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            children: [
+              const Text('Keranjang Belanja', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 24),
+              Expanded(child: _buildCartItemsList(updatedProvider, format)),
+              const Divider(),
+              _buildTotalSection(updatedProvider, format),
+              const SizedBox(height: 24),
+              SizedBox(
+                width: double.infinity,
+                height: 56,
+                child: ElevatedButton(
+                  onPressed: updatedProvider.cartItems.isEmpty ? null : () {
+                    Navigator.pop(context);
+                    _showCheckoutDialog(context, updatedProvider);
+                  },
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.blue, foregroundColor: Colors.white, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
+                  child: const Text('Lanjutkan Pembayaran'),
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
