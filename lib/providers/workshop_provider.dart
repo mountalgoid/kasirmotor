@@ -77,7 +77,7 @@ class WorkshopProvider with ChangeNotifier {
         price: price,
         quantity: quantity,
         isService: false,
-        priceType: priceType ?? 'Retail',
+        priceType: priceType ?? 'Ecer',
         itemCode: item.code,
       ));
     } else if (item is ServiceItem) {
@@ -87,6 +87,7 @@ class WorkshopProvider with ChangeNotifier {
         price: item.price,
         quantity: 1,
         isService: true,
+        priceType: item.category,
       ));
     }
     notifyListeners();

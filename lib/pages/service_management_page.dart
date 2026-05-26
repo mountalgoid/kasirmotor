@@ -58,12 +58,14 @@ class _ServiceManagementPageState extends State<ServiceManagementPage> {
                   child: DataTable(
                     columns: const [
                       DataColumn(label: Text('Nama Jasa')),
+                      DataColumn(label: Text('Kategori')),
                       DataColumn(label: Text('Harga')),
                       DataColumn(label: Text('Aksi')),
                     ],
                     rows: filteredServices.map((service) => DataRow(
                       cells: [
                         DataCell(Text(service.name)),
+                        DataCell(Text(service.category)),
                         DataCell(Text(currencyFormat.format(service.price))),
                         DataCell(
                           Row(
@@ -94,6 +96,7 @@ class _ServiceManagementPageState extends State<ServiceManagementPage> {
   void _showServiceDialog(BuildContext context, {ServiceItem? service}) {
     final nameController = TextEditingController(text: service?.name);
     final priceController = TextEditingController(text: service?.price.toStringAsFixed(0));
+    final categoryController = TextEditingController(text: service?.category ?? 'Umum');
 
     showDialog(
       context: context,
@@ -103,6 +106,7 @@ class _ServiceManagementPageState extends State<ServiceManagementPage> {
           mainAxisSize: MainAxisSize.min,
           children: [
             TextField(controller: nameController, decoration: const InputDecoration(labelText: 'Nama Jasa')),
+            TextField(controller: categoryController, decoration: const InputDecoration(labelText: 'Kategori (contoh: Mesin, Kelistrikan)')),
             TextField(controller: priceController, decoration: const InputDecoration(labelText: 'Harga'), keyboardType: TextInputType.number),
           ],
         ),
@@ -114,6 +118,7 @@ class _ServiceManagementPageState extends State<ServiceManagementPage> {
                 final newService = ServiceItem(
                   id: service?.id ?? const Uuid().v4(),
                   name: nameController.text,
+                  category: categoryController.text,
                   price: double.tryParse(priceController.text) ?? 0,
                 );
 

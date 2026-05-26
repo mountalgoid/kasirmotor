@@ -95,7 +95,10 @@ class _InventoryPageState extends State<InventoryPage> {
               child: Card(
                 clipBehavior: Clip.antiAlias,
                 child: SingleChildScrollView(
-                  child: DataTable(
+                  scrollDirection: Axis.vertical,
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: DataTable(
                     columnSpacing: 24,
                     columns: const [
                       DataColumn(label: Text('Kode')),
@@ -157,6 +160,7 @@ class _InventoryPageState extends State<InventoryPage> {
                         ),
                       ]);
                     }).toList(),
+                    ),
                   ),
                 ),
               ),
