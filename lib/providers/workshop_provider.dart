@@ -106,7 +106,7 @@ class WorkshopProvider with ChangeNotifier {
           id: existingItem.id,
           name: existingItem.name,
           price: existingItem.price,
-          quantity: existingItem.quantity + 1,
+          quantity: existingItem.quantity + quantity,
           isService: true,
           priceType: existingItem.priceType,
         );
@@ -115,7 +115,7 @@ class WorkshopProvider with ChangeNotifier {
           id: item.id,
           name: item.name,
           price: item.price,
-          quantity: 1,
+          quantity: quantity,
           isService: true,
           priceType: item.category,
         ));

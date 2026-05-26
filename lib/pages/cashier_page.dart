@@ -397,30 +397,32 @@ class _CashierPageState extends State<CashierPage> {
       context: context,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
-      builder: (context) => Container(
-        height: MediaQuery.of(context).size.height * 0.7,
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          children: [
-            const Text('Keranjang Belanja', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 24),
-            Expanded(child: _buildCartItemsList(provider, format)),
-            const Divider(),
-            _buildTotalSection(provider, format),
-            const SizedBox(height: 24),
-            SizedBox(
-              width: double.infinity,
-              height: 56,
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                  _showCheckoutDialog(context, provider);
-                },
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.blue, foregroundColor: Colors.white, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
-                child: const Text('Lanjutkan Pembayaran'),
+      builder: (context) => Consumer<WorkshopProvider>(
+        builder: (context, provider, child) => Container(
+          height: MediaQuery.of(context).size.height * 0.7,
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            children: [
+              const Text('Keranjang Belanja', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 24),
+              Expanded(child: _buildCartItemsList(provider, format)),
+              const Divider(),
+              _buildTotalSection(provider, format),
+              const SizedBox(height: 24),
+              SizedBox(
+                width: double.infinity,
+                height: 56,
+                child: ElevatedButton(
+                  onPressed: provider.cartItems.isEmpty ? null : () {
+                    Navigator.pop(context);
+                    _showCheckoutDialog(context, provider);
+                  },
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.blue, foregroundColor: Colors.white, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
+                  child: const Text('Lanjutkan Pembayaran'),
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
