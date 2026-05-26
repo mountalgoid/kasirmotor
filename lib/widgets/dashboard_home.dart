@@ -31,6 +31,7 @@ class _DashboardHomeState extends State<DashboardHome> {
     final isMobile = MediaQuery.of(context).size.width < 850;
 
     double totalRevenue = provider.transactions.fold(0, (sum, tx) => sum + tx.totalAmount);
+    double totalNetProfit = provider.transactions.fold(0, (sum, tx) => sum + tx.totalProfit);
     int totalPartsSold = provider.transactions.fold(0, (sum, tx) => sum + tx.items.where((i) => !i.isService).length);
 
     return Scaffold(
@@ -72,9 +73,9 @@ class _DashboardHomeState extends State<DashboardHome> {
                   crossAxisSpacing: 16,
                   mainAxisSpacing: 16,
                   children: [
-                    _buildStatCard(context, 'Pendapatan', currencyFormat.format(totalRevenue), Icons.payments, Colors.green),
+                    _buildStatCard(context, 'Pendapatan Kotor', currencyFormat.format(totalRevenue), Icons.payments, Colors.red),
+                    _buildStatCard(context, 'Pendapatan Bersih', currencyFormat.format(totalNetProfit), Icons.account_balance_wallet, Colors.green),
                     _buildStatCard(context, 'Transaksi', provider.transactions.length.toString(), Icons.shopping_cart, Colors.red),
-                    _buildStatCard(context, 'Terjual', totalPartsSold.toString(), Icons.build, Colors.purple),
                     _buildStatCard(context, 'Stok Tipis', provider.spareParts.where((p) => p.stock < 5).length.toString(), Icons.warning, Colors.orange),
                   ],
                 );
@@ -142,6 +143,18 @@ class _DashboardHomeState extends State<DashboardHome> {
                           show: true,
                           rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
                           topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                          leftTitles: AxisTitles(
+                            sideTitles: SideTitles(
+                              showTitles: true,
+                              reservedSize: 40,
+                              getTitlesWidget: (value, meta) {
+                                if (value == 0) return const Text('0');
+                                if (value >= 1000000) return Text('${(value / 1000000).toStringAsFixed(1)}M');
+                                if (value >= 1000) return Text('${(value / 1000).toStringAsFixed(0)}K');
+                                return Text(value.toStringAsFixed(0));
+                              },
+                            ),
+                          ),
                           bottomTitles: AxisTitles(
                             sideTitles: SideTitles(
                               showTitles: true,
@@ -151,11 +164,24 @@ class _DashboardHomeState extends State<DashboardHome> {
                                 if (index < 0 || index >= filteredData.length) return const Text('');
                                 return Padding(
                                   padding: const EdgeInsets.only(top: 8.0),
-                                  child: Text(filteredData[index].label, style: const TextStyle(fontSize: 10)),
+                                  child: Text(filteredData[index].label, style: const TextStyle(fontSize: 9)),
                                 );
                               },
                               reservedSize: 30,
                             ),
+                          ),
+                        ),
+                        lineTouchData: LineTouchData(
+                          touchTooltipData: LineTouchTooltipData(
+                            getTooltipItems: (touchedSpots) {
+                              final format = NumberFormat.currency(locale: 'id', symbol: 'Rp ', decimalDigits: 0);
+                              return touchedSpots.map((spot) {
+                                return LineTooltipItem(
+                                  format.format(spot.y),
+                                  const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                                );
+                              }).toList();
+                            },
                           ),
                         ),
                         borderData: FlBorderData(show: false),
@@ -183,11 +209,15 @@ class _DashboardHomeState extends State<DashboardHome> {
     List<ChartData> data = [];
 
     if (_chartFilter == '1 Hari') {
-      // Group by hours (last 24 hours)
+      // Group by hours (last 24 hours, starting from 23 hours ago)
       for (int i = 23; i >= 0; i--) {
         final time = now.subtract(Duration(hours: i));
+        final hourStart = DateTime(time.year, time.month, time.day, time.hour);
+        final hourEnd = hourStart.add(const Duration(hours: 1));
+
         final amount = transactions
-            .where((tx) => tx.date.year == time.year && tx.date.month == time.month && tx.date.day == time.day && tx.date.hour == time.hour)
+            .where((tx) => tx.date.isAfter(hourStart.subtract(const Duration(seconds: 1))) &&
+                           tx.date.isBefore(hourEnd))
             .fold(0.0, (sum, tx) => sum + tx.totalAmount);
         data.add(ChartData(DateFormat('HH:00').format(time), amount));
       }
@@ -195,26 +225,41 @@ class _DashboardHomeState extends State<DashboardHome> {
       // Group by days (last 7 days)
       for (int i = 6; i >= 0; i--) {
         final date = now.subtract(Duration(days: i));
+        final dayStart = DateTime(date.year, date.month, date.day);
+        final dayEnd = dayStart.add(const Duration(days: 1));
+
         final amount = transactions
-            .where((tx) => tx.date.year == date.year && tx.date.month == date.month && tx.date.day == date.day)
+            .where((tx) => tx.date.isAfter(dayStart.subtract(const Duration(seconds: 1))) &&
+                           tx.date.isBefore(dayEnd))
             .fold(0.0, (sum, tx) => sum + tx.totalAmount);
         data.add(ChartData(DateFormat('dd/MM').format(date), amount));
       }
     } else if (_chartFilter == '1 Bulan') {
-      // Group by days (last 30 days)
-      for (int i = 29; i >= 0; i -= 3) {
+      // Group by days (last 30 days, showing every 2-3 days for clarity)
+      for (int i = 29; i >= 0; i--) {
         final date = now.subtract(Duration(days: i));
+        final dayStart = DateTime(date.year, date.month, date.day);
+        final dayEnd = dayStart.add(const Duration(days: 1));
+
         final amount = transactions
-            .where((tx) => tx.date.isAfter(date.subtract(const Duration(days: 3))) && tx.date.isBefore(date.add(const Duration(seconds: 1))))
+            .where((tx) => tx.date.isAfter(dayStart.subtract(const Duration(seconds: 1))) &&
+                           tx.date.isBefore(dayEnd))
             .fold(0.0, (sum, tx) => sum + tx.totalAmount);
-        data.add(ChartData(DateFormat('dd/MM').format(date), amount));
+
+        // Add all days but only label some for readability
+        String label = (i % 5 == 0 || i == 0) ? DateFormat('dd/MM').format(date) : '';
+        data.add(ChartData(label, amount));
       }
     } else if (_chartFilter == '1 Tahun') {
       // Group by months (last 12 months)
       for (int i = 11; i >= 0; i--) {
         final date = DateTime(now.year, now.month - i, 1);
+        final monthStart = DateTime(date.year, date.month, 1);
+        final nextMonth = date.month == 12 ? DateTime(date.year + 1, 1, 1) : DateTime(date.year, date.month + 1, 1);
+
         final amount = transactions
-            .where((tx) => tx.date.year == date.year && tx.date.month == date.month)
+            .where((tx) => tx.date.isAfter(monthStart.subtract(const Duration(seconds: 1))) &&
+                           tx.date.isBefore(nextMonth))
             .fold(0.0, (sum, tx) => sum + tx.totalAmount);
         data.add(ChartData(DateFormat('MMM').format(date), amount));
       }

@@ -6,6 +6,7 @@ class TransactionItem {
   final String id;
   final String name;
   final double price;
+  final double costPrice;
   final int quantity;
   final bool isService;
   final String? priceType; // sales, bengkel, ecer, or purchase
@@ -15,6 +16,7 @@ class TransactionItem {
     required this.id,
     required this.name,
     required this.price,
+    this.costPrice = 0,
     this.quantity = 1,
     required this.isService,
     this.priceType,
@@ -22,6 +24,8 @@ class TransactionItem {
   });
 
   double get total => price * quantity;
+  double get totalCost => costPrice * quantity;
+  double get profit => total - totalCost;
 }
 
 class Transaction {
@@ -44,4 +48,5 @@ class Transaction {
   });
 
   double get change => paidAmount - totalAmount;
+  double get totalProfit => items.fold(0, (sum, item) => sum + item.profit);
 }
