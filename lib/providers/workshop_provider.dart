@@ -7,9 +7,36 @@ import '../models/transaction.dart';
 
 class WorkshopProvider with ChangeNotifier {
   final List<SparePart> _spareParts = [
-    SparePart(id: '1', name: 'Oli MPX 2', price: 55000, stock: 20, code: 'OLI001'),
-    SparePart(id: '2', name: 'Kampas Rem Depan', price: 35000, stock: 15, code: 'BRK001'),
-    SparePart(id: '3', name: 'Ban Luar IRC 80/90-14', price: 185000, stock: 5, code: 'TYR001'),
+    SparePart(
+      id: '1',
+      name: 'Oli MPX 2',
+      purchasePrice: 45000,
+      sellingPriceSales: 50000,
+      sellingPriceWorkshop: 52000,
+      sellingPriceRetail: 55000,
+      stock: 20,
+      code: 'OLI001',
+    ),
+    SparePart(
+      id: '2',
+      name: 'Kampas Rem Depan',
+      purchasePrice: 25000,
+      sellingPriceSales: 30000,
+      sellingPriceWorkshop: 32000,
+      sellingPriceRetail: 35000,
+      stock: 15,
+      code: 'BRK001',
+    ),
+    SparePart(
+      id: '3',
+      name: 'Ban Luar IRC 80/90-14',
+      purchasePrice: 150000,
+      sellingPriceSales: 170000,
+      sellingPriceWorkshop: 175000,
+      sellingPriceRetail: 185000,
+      stock: 5,
+      code: 'TYR001',
+    ),
   ];
 
   final List<ServiceItem> _services = [
@@ -41,26 +68,18 @@ class WorkshopProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void addToCart(dynamic item, {int quantity = 1}) {
+  void addToCart(dynamic item, {int quantity = 1, String? priceType, double? customPrice}) {
     if (item is SparePart) {
-      final existingIndex = _cartItems.indexWhere((element) => element.id == item.id && !element.isService);
-      if (existingIndex >= 0) {
-        _cartItems[existingIndex] = TransactionItem(
-          id: item.id,
-          name: item.name,
-          price: item.price,
-          quantity: _cartItems[existingIndex].quantity + quantity,
-          isService: false,
-        );
-      } else {
-        _cartItems.add(TransactionItem(
-          id: item.id,
-          name: item.name,
-          price: item.price,
-          quantity: quantity,
-          isService: false,
-        ));
-      }
+      final price = customPrice ?? item.sellingPriceRetail;
+      _cartItems.add(TransactionItem(
+        id: item.id,
+        name: item.name,
+        price: price,
+        quantity: quantity,
+        isService: false,
+        priceType: priceType ?? 'Retail',
+        itemCode: item.code,
+      ));
     } else if (item is ServiceItem) {
       _cartItems.add(TransactionItem(
         id: item.id,

@@ -53,11 +53,23 @@ class TransactionHistoryPage extends StatelessWidget {
                             const Text('Rincian:', style: TextStyle(fontWeight: FontWeight.bold)),
                             const SizedBox(height: 8),
                             ...tx.items.map((item) => Padding(
-                                  padding: const EdgeInsets.symmetric(vertical: 2.0),
+                                  padding: const EdgeInsets.symmetric(vertical: 4.0),
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      Text('${item.name} x${item.quantity}'),
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Text('${item.name} x${item.quantity}'),
+                                            if (item.itemCode != null)
+                                              Text(item.itemCode!, style: TextStyle(color: Colors.grey[500], fontSize: 10)),
+                                            if (item.priceType != null)
+                                              Text('Tipe: ${item.priceType}', style: TextStyle(color: Colors.blue[300], fontSize: 10)),
+                                          ],
+                                        ),
+                                      ),
                                       Text(currencyFormat.format(item.total)),
                                     ],
                                   ),

@@ -8,6 +8,8 @@ class TransactionItem {
   final double price;
   final int quantity;
   final bool isService;
+  final String? priceType; // sales, bengkel, ecer, or purchase
+  final String? itemCode;
 
   TransactionItem({
     required this.id,
@@ -15,6 +17,8 @@ class TransactionItem {
     required this.price,
     this.quantity = 1,
     required this.isService,
+    this.priceType,
+    this.itemCode,
   });
 
   double get total => price * quantity;
