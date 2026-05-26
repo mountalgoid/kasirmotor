@@ -30,7 +30,7 @@ class BengkelProApp extends StatelessWidget {
             theme: ThemeData(
               useMaterial3: true,
               colorScheme: ColorScheme.fromSeed(
-                seedColor: Colors.blueAccent,
+                seedColor: Colors.redAccent,
                 brightness: Brightness.light,
               ),
               textTheme: GoogleFonts.poppinsTextTheme(),
@@ -38,7 +38,7 @@ class BengkelProApp extends StatelessWidget {
             darkTheme: ThemeData(
               useMaterial3: true,
               colorScheme: ColorScheme.fromSeed(
-                seedColor: Colors.blueAccent,
+                seedColor: Colors.redAccent,
                 brightness: Brightness.dark,
               ),
               textTheme: GoogleFonts.poppinsTextTheme(ThemeData.dark().textTheme),

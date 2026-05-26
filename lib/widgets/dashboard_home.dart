@@ -49,7 +49,7 @@ class _DashboardHomeState extends State<DashboardHome> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text('Dashboard', style: Theme.of(context).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold)),
-                    Text('Selamat datang kembali di Bengkel Pro', style: TextStyle(color: Colors.grey[600])),
+                    Text('Selamat datang kembali di Ibrahim Part', style: TextStyle(color: Colors.grey[600])),
                   ],
                 ),
                 ElevatedButton.icon(
@@ -73,7 +73,7 @@ class _DashboardHomeState extends State<DashboardHome> {
                   mainAxisSpacing: 16,
                   children: [
                     _buildStatCard(context, 'Pendapatan', currencyFormat.format(totalRevenue), Icons.payments, Colors.green),
-                    _buildStatCard(context, 'Transaksi', provider.transactions.length.toString(), Icons.shopping_cart, Colors.blue),
+                    _buildStatCard(context, 'Transaksi', provider.transactions.length.toString(), Icons.shopping_cart, Colors.red),
                     _buildStatCard(context, 'Terjual', totalPartsSold.toString(), Icons.build, Colors.purple),
                     _buildStatCard(context, 'Stok Tipis', provider.spareParts.where((p) => p.stock < 5).length.toString(), Icons.warning, Colors.orange),
                   ],
@@ -163,10 +163,10 @@ class _DashboardHomeState extends State<DashboardHome> {
                           LineChartBarData(
                             spots: List.generate(filteredData.length, (i) => FlSpot(i.toDouble(), filteredData[i].amount)),
                             isCurved: true,
-                            color: Colors.blue,
+                            color: Colors.red,
                             barWidth: 4,
                             dotData: const FlDotData(show: true),
-                            belowBarData: BarAreaData(show: true, color: Colors.blue.withOpacity(0.1)),
+                            belowBarData: BarAreaData(show: true, color: Colors.red.withOpacity(0.1)),
                           ),
                         ],
                       ),
@@ -294,8 +294,8 @@ class _DashboardHomeState extends State<DashboardHome> {
                   return ListTile(
                     contentPadding: EdgeInsets.zero,
                     leading: CircleAvatar(
-                      backgroundColor: Colors.blue.withOpacity(0.1),
-                      child: const Icon(Icons.receipt_long, color: Colors.blue, size: 20),
+                      backgroundColor: Colors.red.withOpacity(0.1),
+                      child: const Icon(Icons.receipt_long, color: Colors.red, size: 20),
                     ),
                     title: Text(tx.customer?.name ?? 'Umum', style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
                     subtitle: Text(DateFormat('HH:mm').format(tx.date), style: const TextStyle(fontSize: 12)),

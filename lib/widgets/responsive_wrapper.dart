@@ -82,7 +82,7 @@ class _ResponsiveWrapperState extends State<ResponsiveWrapper> {
               extended: MediaQuery.of(context).size.width > 1200,
               leading: const Padding(
                 padding: EdgeInsets.symmetric(vertical: 24),
-                child: CircleAvatar(backgroundColor: Colors.blue, child: Icon(Icons.motorcycle, color: Colors.white)),
+                child: CircleAvatar(backgroundColor: Colors.red, child: Icon(Icons.motorcycle, color: Colors.white)),
               ),
               destinations: const [
                 NavigationRailDestination(icon: Icon(Icons.dashboard_outlined), selectedIcon: Icon(Icons.dashboard), label: Text('Dashboard')),
