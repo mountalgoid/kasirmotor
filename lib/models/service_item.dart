@@ -10,4 +10,18 @@ class ServiceItem {
     required this.price,
     this.category = 'Umum',
   });
+
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'name': name,
+    'price': price,
+    'category': category,
+  };
+
+  factory ServiceItem.fromJson(Map<String, dynamic> json) => ServiceItem(
+    id: json['id'],
+    name: json['name'],
+    price: (json['price'] as num).toDouble(),
+    category: json['category'],
+  );
 }

@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'package:flutter/foundation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 import '../models/sparepart.dart';
 import '../models/service_item.dart';
@@ -6,6 +8,9 @@ import '../models/customer.dart';
 import '../models/transaction.dart';
 
 class WorkshopProvider with ChangeNotifier {
+  WorkshopProvider() {
+    loadData();
+  }
   final List<SparePart> _spareParts = [
     SparePart(
       id: '1',
@@ -68,6 +73,48 @@ class WorkshopProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> saveData() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('spareParts', jsonEncode(_spareParts.map((p) => p.toJson()).toList()));
+    await prefs.setString('services', jsonEncode(_services.map((s) => s.toJson()).toList()));
+    await prefs.setString('customers', jsonEncode(_customers.map((c) => c.toJson()).toList()));
+    await prefs.setString('transactions', jsonEncode(_transactions.map((t) => t.toJson()).toList()));
+  }
+
+  Future<void> loadData() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+
+      final partsStr = prefs.getString('spareParts');
+      if (partsStr != null) {
+        _spareParts.clear();
+        _spareParts.addAll((jsonDecode(partsStr) as List).map((p) => SparePart.fromJson(p)).toList());
+      }
+
+      final servicesStr = prefs.getString('services');
+      if (servicesStr != null) {
+        _services.clear();
+        _services.addAll((jsonDecode(servicesStr) as List).map((s) => ServiceItem.fromJson(s)).toList());
+      }
+
+      final customersStr = prefs.getString('customers');
+      if (customersStr != null) {
+        _customers.clear();
+        _customers.addAll((jsonDecode(customersStr) as List).map((c) => Customer.fromJson(c)).toList());
+      }
+
+      final transactionsStr = prefs.getString('transactions');
+      if (transactionsStr != null) {
+        _transactions.clear();
+        _transactions.addAll((jsonDecode(transactionsStr) as List).map((t) => Transaction.fromJson(t)).toList());
+      }
+
+      notifyListeners();
+    } catch (e) {
+      if (kDebugMode) print('Error loading data: $e');
+    }
+  }
+
   void addToCart(dynamic item, {int quantity = 1, String? priceType, double? customPrice}) {
     if (item is SparePart) {
       final price = customPrice ?? item.hargaEcer;
@@ -81,6 +128,7 @@ class WorkshopProvider with ChangeNotifier {
           id: existingItem.id,
           name: existingItem.name,
           price: existingItem.price,
+          costPrice: item.hargaBeli,
           quantity: existingItem.quantity + quantity,
           isService: false,
           priceType: existingItem.priceType,
@@ -91,6 +139,7 @@ class WorkshopProvider with ChangeNotifier {
           id: item.id,
           name: item.name,
           price: price,
+          costPrice: item.hargaBeli,
           quantity: quantity,
           isService: false,
           priceType: type,
@@ -131,6 +180,7 @@ class WorkshopProvider with ChangeNotifier {
         id: item.id,
         name: item.name,
         price: item.price,
+        costPrice: item.costPrice,
         quantity: item.quantity + 1,
         isService: item.isService,
         priceType: item.priceType,
@@ -148,6 +198,7 @@ class WorkshopProvider with ChangeNotifier {
           id: item.id,
           name: item.name,
           price: item.price,
+          costPrice: item.costPrice,
           quantity: item.quantity - 1,
           isService: item.isService,
           priceType: item.priceType,
@@ -196,11 +247,13 @@ class WorkshopProvider with ChangeNotifier {
 
     _transactions.insert(0, transaction);
     clearCart();
+    saveData();
     notifyListeners();
   }
 
   void addSparePart(SparePart part) {
     _spareParts.add(part);
+    saveData();
     notifyListeners();
   }
 
@@ -208,17 +261,20 @@ class WorkshopProvider with ChangeNotifier {
     final index = _spareParts.indexWhere((p) => p.id == updatedPart.id);
     if (index >= 0) {
       _spareParts[index] = updatedPart;
+      saveData();
       notifyListeners();
     }
   }
 
   void deleteSparePart(String id) {
     _spareParts.removeWhere((p) => p.id == id);
+    saveData();
     notifyListeners();
   }
 
   void addCustomer(Customer customer) {
     _customers.add(customer);
+    saveData();
     notifyListeners();
   }
 
@@ -226,6 +282,7 @@ class WorkshopProvider with ChangeNotifier {
     final index = _customers.indexWhere((c) => c.id == updatedCustomer.id);
     if (index >= 0) {
       _customers[index] = updatedCustomer;
+      saveData();
       notifyListeners();
     }
   }
@@ -235,11 +292,13 @@ class WorkshopProvider with ChangeNotifier {
     if (_selectedCustomer?.id == id) {
       _selectedCustomer = null;
     }
+    saveData();
     notifyListeners();
   }
 
   void addServiceItem(ServiceItem service) {
     _services.add(service);
+    saveData();
     notifyListeners();
   }
 
@@ -247,12 +306,14 @@ class WorkshopProvider with ChangeNotifier {
     final index = _services.indexWhere((s) => s.id == updatedService.id);
     if (index >= 0) {
       _services[index] = updatedService;
+      saveData();
       notifyListeners();
     }
   }
 
   void deleteServiceItem(String id) {
     _services.removeWhere((s) => s.id == id);
+    saveData();
     notifyListeners();
   }
 }

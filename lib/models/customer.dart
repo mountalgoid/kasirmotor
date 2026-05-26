@@ -12,4 +12,20 @@ class Customer {
     required this.bikeType,
     this.address = '',
   });
+
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'name': name,
+    'plateNumber': plateNumber,
+    'bikeType': bikeType,
+    'address': address,
+  };
+
+  factory Customer.fromJson(Map<String, dynamic> json) => Customer(
+    id: json['id'],
+    name: json['name'],
+    plateNumber: json['plateNumber'],
+    bikeType: json['bikeType'],
+    address: json['address'] ?? '',
+  );
 }

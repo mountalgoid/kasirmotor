@@ -64,19 +64,20 @@ class _DashboardHomeState extends State<DashboardHome> {
             // Stat Cards
             LayoutBuilder(
               builder: (context, constraints) {
-                final crossAxisCount = constraints.maxWidth < 600 ? 1 : (constraints.maxWidth < 900 ? 2 : 4);
+                final crossAxisCount = constraints.maxWidth < 600 ? 2 : (constraints.maxWidth < 900 ? 3 : 5);
                 return GridView.count(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
                   crossAxisCount: crossAxisCount,
-                  childAspectRatio: constraints.maxWidth < 600 ? 2.5 : 1.5,
+                  childAspectRatio: constraints.maxWidth < 600 ? 1.4 : 1.5,
                   crossAxisSpacing: 16,
                   mainAxisSpacing: 16,
                   children: [
-                    _buildStatCard(context, 'Pendapatan Kotor', currencyFormat.format(totalRevenue), Icons.payments, Colors.red),
-                    _buildStatCard(context, 'Pendapatan Bersih', currencyFormat.format(totalNetProfit), Icons.account_balance_wallet, Colors.green),
-                    _buildStatCard(context, 'Transaksi', provider.transactions.length.toString(), Icons.shopping_cart, Colors.red),
-                    _buildStatCard(context, 'Stok Tipis', provider.spareParts.where((p) => p.stock < 5).length.toString(), Icons.warning, Colors.orange),
+                    _buildStatCard(context, 'Pendapatan Kotor', currencyFormat.format(totalRevenue), Icons.payments, Colors.red, onTap: () => _showRevenueDetails(context, provider, currencyFormat)),
+                    _buildStatCard(context, 'Pendapatan Bersih', currencyFormat.format(totalNetProfit), Icons.account_balance_wallet, Colors.green, onTap: () => _showRevenueDetails(context, provider, currencyFormat)),
+                    _buildStatCard(context, 'Transaksi', provider.transactions.length.toString(), Icons.shopping_cart, Colors.red, onTap: () => _showTransactionDetails(context, provider, currencyFormat)),
+                    _buildStatCard(context, 'Terjual', totalPartsSold.toString(), Icons.assignment_turned_in, Colors.purple, onTap: () => _showItemsSoldDetails(context, provider, currencyFormat)),
+                    _buildStatCard(context, 'Stok Tipis', provider.spareParts.where((p) => p.stock < 5).length.toString(), Icons.warning, Colors.orange, onTap: () => _showLowStockDetails(context, provider, currencyFormat)),
                   ],
                 );
               }
@@ -354,45 +355,232 @@ class _DashboardHomeState extends State<DashboardHome> {
     );
   }
 
-  Widget _buildStatCard(BuildContext context, String title, String value, IconData icon, Color color) {
-    return Card(
-      elevation: 0,
-      color: color.withOpacity(0.05),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16), side: BorderSide(color: color.withOpacity(0.1))),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
+  void _showRevenueDetails(BuildContext context, WorkshopProvider provider, NumberFormat format) {
+    double cashRev = provider.transactions.where((t) => t.paymentMethod == PaymentMethod.cash).fold(0, (sum, t) => sum + t.totalAmount);
+    double transferRev = provider.transactions.where((t) => t.paymentMethod == PaymentMethod.transfer).fold(0, (sum, t) => sum + t.totalAmount);
+    double totalProfit = provider.transactions.fold(0, (sum, t) => sum + t.totalProfit);
+
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      builder: (context) => Padding(
+        padding: const EdgeInsets.all(24),
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(6),
-                  decoration: BoxDecoration(color: color.withOpacity(0.1), borderRadius: BorderRadius.circular(8)),
-                  child: Icon(icon, color: color, size: 20),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    title,
-                    style: TextStyle(color: Colors.grey[600], fontSize: 11, fontWeight: FontWeight.w500),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            FittedBox(
-              fit: BoxFit.scaleDown,
-              alignment: Alignment.centerLeft,
-              child: Text(
-                value,
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold, color: color, fontSize: 18),
-              ),
-            ),
+            const Text('Detail Pendapatan', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 24),
+            _detailRow('Total Pendapatan Kotor', format.format(cashRev + transferRev), isBold: true),
+            _detailRow('Total Pendapatan Bersih (Laba)', format.format(totalProfit), color: Colors.green, isBold: true),
+            const Divider(height: 32),
+            _detailRow('Pembayaran Tunai', format.format(cashRev)),
+            _detailRow('Pembayaran Transfer/QRIS', format.format(transferRev)),
           ],
+        ),
+      ),
+    );
+  }
+
+  void _showTransactionDetails(BuildContext context, WorkshopProvider provider, NumberFormat format) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      builder: (context) => DraggableScrollableSheet(
+        initialChildSize: 0.6,
+        maxChildSize: 0.9,
+        expand: false,
+        builder: (context, scrollController) => Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text('Transaksi Terbaru', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 16),
+              Expanded(
+                child: ListView.separated(
+                  controller: scrollController,
+                  itemCount: provider.transactions.length,
+                  separatorBuilder: (_, __) => const Divider(),
+                  itemBuilder: (context, index) {
+                    final tx = provider.transactions[index];
+                    return ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      title: Text(tx.customer?.name ?? 'Umum', style: const TextStyle(fontWeight: FontWeight.bold)),
+                      subtitle: Text('${DateFormat('dd/MM/yy HH:mm').format(tx.date)} • ${tx.items.length} item'),
+                      trailing: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Text(format.format(tx.totalAmount), style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.red)),
+                          Text('Profit: ${format.format(tx.totalProfit)}', style: const TextStyle(fontSize: 10, color: Colors.green)),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showItemsSoldDetails(BuildContext context, WorkshopProvider provider, NumberFormat format) {
+    Map<String, int> parts = {};
+    Map<String, int> services = {};
+
+    for (var tx in provider.transactions) {
+      for (var item in tx.items) {
+        if (item.isService) {
+          services[item.name] = (services[item.name] ?? 0) + item.quantity;
+        } else {
+          parts[item.name] = (parts[item.name] ?? 0) + item.quantity;
+        }
+      }
+    }
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      builder: (context) => DraggableScrollableSheet(
+        initialChildSize: 0.6,
+        maxChildSize: 0.9,
+        expand: false,
+        builder: (context, scrollController) => Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text('Detail Item Terjual', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 16),
+              Expanded(
+                child: ListView(
+                  controller: scrollController,
+                  children: [
+                    if (services.isNotEmpty) ...[
+                      const Text('Jasa Servis', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.red)),
+                      const Divider(),
+                      ...services.entries.map((e) => ListTile(title: Text(e.key), trailing: Text('${e.value}x'))),
+                      const SizedBox(height: 24),
+                    ],
+                    if (parts.isNotEmpty) ...[
+                      const Text('Sparepart', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.red)),
+                      const Divider(),
+                      ...parts.entries.map((e) => ListTile(title: Text(e.key), trailing: Text('${e.value}x'))),
+                    ],
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showLowStockDetails(BuildContext context, WorkshopProvider provider, NumberFormat format) {
+    final lowStockItems = provider.spareParts.where((p) => p.stock < 5).toList();
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      builder: (context) => Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text('Peringatan Stok Rendah', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.orange)),
+            const SizedBox(height: 16),
+            if (lowStockItems.isEmpty)
+              const Center(child: Text('Semua stok aman'))
+            else
+              Expanded(
+                child: ListView.builder(
+                  itemCount: lowStockItems.length,
+                  itemBuilder: (context, index) {
+                    final item = lowStockItems[index];
+                    return ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      leading: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(color: Colors.red.withOpacity(0.1), borderRadius: BorderRadius.circular(8)),
+                        child: Text('${item.stock}', style: const TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
+                      ),
+                      title: Text(item.name),
+                      subtitle: Text('Kode: ${item.code}'),
+                      trailing: Text(format.format(item.hargaBeli), style: const TextStyle(fontSize: 12)),
+                    );
+                  },
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _detailRow(String label, String value, {bool isBold = false, Color? color}) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(label, style: TextStyle(fontWeight: isBold ? FontWeight.bold : FontWeight.normal)),
+          Text(value, style: TextStyle(fontWeight: isBold ? FontWeight.bold : FontWeight.normal, color: color)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStatCard(BuildContext context, String title, String value, IconData icon, Color color, {VoidCallback? onTap}) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(16),
+      child: Card(
+        elevation: 0,
+        color: color.withOpacity(0.05),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16), side: BorderSide(color: color.withOpacity(0.1))),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(6),
+                    decoration: BoxDecoration(color: color.withOpacity(0.1), borderRadius: BorderRadius.circular(8)),
+                    child: Icon(icon, color: color, size: 20),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      title,
+                      style: TextStyle(color: Colors.grey[600], fontSize: 11, fontWeight: FontWeight.w500),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  if (onTap != null)
+                    Icon(Icons.chevron_right, size: 16, color: color.withOpacity(0.5)),
+                ],
+              ),
+              const SizedBox(height: 12),
+              FittedBox(
+                fit: BoxFit.scaleDown,
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  value,
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold, color: color, fontSize: 18),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
