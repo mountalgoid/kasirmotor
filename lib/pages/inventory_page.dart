@@ -118,10 +118,10 @@ class _InventoryPageState extends State<InventoryPage> {
                       return DataRow(cells: [
                         DataCell(Text(part.code)),
                         DataCell(Text(part.name)),
-                        DataCell(Text(currencyFormat.format(part.purchasePrice))),
-                        DataCell(Text(currencyFormat.format(part.sellingPriceSales))),
-                        DataCell(Text(currencyFormat.format(part.sellingPriceWorkshop))),
-                        DataCell(Text(currencyFormat.format(part.sellingPriceRetail))),
+                        DataCell(Text(currencyFormat.format(part.hargaBeli))),
+                        DataCell(Text(currencyFormat.format(part.hargaSales))),
+                        DataCell(Text(currencyFormat.format(part.hargaBengkel))),
+                        DataCell(Text(currencyFormat.format(part.hargaEcer))),
                         DataCell(Text(part.stock.toString())),
                         DataCell(
                           Container(
@@ -173,10 +173,10 @@ class _InventoryPageState extends State<InventoryPage> {
 
   void _showPartDialog(BuildContext context, {SparePart? part}) {
     final nameController = TextEditingController(text: part?.name);
-    final purchasePriceController = TextEditingController(text: part?.purchasePrice.toStringAsFixed(0));
-    final salesPriceController = TextEditingController(text: part?.sellingPriceSales.toStringAsFixed(0));
-    final workshopPriceController = TextEditingController(text: part?.sellingPriceWorkshop.toStringAsFixed(0));
-    final retailPriceController = TextEditingController(text: part?.sellingPriceRetail.toStringAsFixed(0));
+    final hargaBeliController = TextEditingController(text: part?.hargaBeli.toStringAsFixed(0));
+    final hargaSalesController = TextEditingController(text: part?.hargaSales.toStringAsFixed(0));
+    final hargaBengkelController = TextEditingController(text: part?.hargaBengkel.toStringAsFixed(0));
+    final hargaEcerController = TextEditingController(text: part?.hargaEcer.toStringAsFixed(0));
     final stockController = TextEditingController(text: part?.stock.toString());
     final codeController = TextEditingController(text: part?.code);
 
@@ -194,13 +194,13 @@ class _InventoryPageState extends State<InventoryPage> {
                 const SizedBox(height: 8),
                 TextField(controller: nameController, decoration: const InputDecoration(labelText: 'Nama Barang')),
                 const SizedBox(height: 8),
-                TextField(controller: purchasePriceController, decoration: const InputDecoration(labelText: 'Harga Beli'), keyboardType: TextInputType.number),
+                TextField(controller: hargaBeliController, decoration: const InputDecoration(labelText: 'Harga Beli'), keyboardType: TextInputType.number),
                 const SizedBox(height: 8),
-                TextField(controller: salesPriceController, decoration: const InputDecoration(labelText: 'Harga Sales'), keyboardType: TextInputType.number),
+                TextField(controller: hargaSalesController, decoration: const InputDecoration(labelText: 'Harga Sales'), keyboardType: TextInputType.number),
                 const SizedBox(height: 8),
-                TextField(controller: workshopPriceController, decoration: const InputDecoration(labelText: 'Harga Bengkel'), keyboardType: TextInputType.number),
+                TextField(controller: hargaBengkelController, decoration: const InputDecoration(labelText: 'Harga Bengkel'), keyboardType: TextInputType.number),
                 const SizedBox(height: 8),
-                TextField(controller: retailPriceController, decoration: const InputDecoration(labelText: 'Harga Ecer'), keyboardType: TextInputType.number),
+                TextField(controller: hargaEcerController, decoration: const InputDecoration(labelText: 'Harga Ecer'), keyboardType: TextInputType.number),
                 const SizedBox(height: 8),
                 TextField(controller: stockController, decoration: const InputDecoration(labelText: 'Stok'), keyboardType: TextInputType.number),
               ],
@@ -215,10 +215,10 @@ class _InventoryPageState extends State<InventoryPage> {
                 final newPart = SparePart(
                   id: part?.id ?? DateTime.now().millisecondsSinceEpoch.toString(),
                   name: nameController.text,
-                  purchasePrice: double.tryParse(purchasePriceController.text) ?? 0,
-                  sellingPriceSales: double.tryParse(salesPriceController.text) ?? 0,
-                  sellingPriceWorkshop: double.tryParse(workshopPriceController.text) ?? 0,
-                  sellingPriceRetail: double.tryParse(retailPriceController.text) ?? 0,
+                  hargaBeli: double.tryParse(hargaBeliController.text) ?? 0,
+                  hargaSales: double.tryParse(hargaSalesController.text) ?? 0,
+                  hargaBengkel: double.tryParse(hargaBengkelController.text) ?? 0,
+                  hargaEcer: double.tryParse(hargaEcerController.text) ?? 0,
                   stock: int.tryParse(stockController.text) ?? 0,
                   code: codeController.text,
                 );
