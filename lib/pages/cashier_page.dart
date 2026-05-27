@@ -43,12 +43,20 @@ class _CashierPageState extends State<CashierPage> {
     ).toList();
 
     return Scaffold(
-      appBar: isMobile ? null : AppBar(
-        title: const Text('Kasir Ibrahim Part'),
+      appBar: AppBar(
+        title: Text(isMobile ? 'Kasir' : 'Kasir Ibrahim Part'),
         actions: [
-          IconButton(icon: const Icon(Icons.person_add_alt_1), onPressed: () => _showAddCustomerDialog(context)),
-          IconButton(icon: const Icon(Icons.delete_sweep), onPressed: () => provider.clearCart()),
-          const SizedBox(width: 16),
+          IconButton(
+            icon: const Icon(Icons.person_add_alt_1),
+            onPressed: () => _showAddCustomerDialog(context),
+            tooltip: 'Tambah Pelanggan',
+          ),
+          IconButton(
+            icon: const Icon(Icons.delete_sweep),
+            onPressed: () => provider.clearCart(),
+            tooltip: 'Kosongkan Keranjang',
+          ),
+          const SizedBox(width: 8),
         ],
       ),
       body: isMobile
@@ -438,7 +446,9 @@ class _CashierPageState extends State<CashierPage> {
           child: Column(
             children: [
               const Text('Keranjang Belanja', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 24),
+              const SizedBox(height: 16),
+              _buildCustomerSelector(provider),
+              const SizedBox(height: 16),
               Expanded(child: _buildCartItemsList(provider, format)),
               const Divider(),
               _buildTotalSection(provider, format),
