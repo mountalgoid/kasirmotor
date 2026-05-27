@@ -153,7 +153,7 @@ class _CashierPageState extends State<CashierPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(service.name, style: const TextStyle(fontWeight: FontWeight.bold), maxLines: 1, overflow: TextOverflow.ellipsis),
-            Text(service.category, style: TextStyle(fontSize: 10, color: Colors.grey[600])),
+            Text(service.category, style: TextStyle(fontSize: 10, color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6))),
             const SizedBox(height: 4),
             Text(format.format(service.price), style: const TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
           ],
@@ -179,7 +179,7 @@ class _CashierPageState extends State<CashierPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(part.name, style: TextStyle(fontWeight: FontWeight.bold, color: isOutOfStock ? Colors.grey : Theme.of(context).colorScheme.onSurface), maxLines: 2, overflow: TextOverflow.ellipsis),
-              Text(part.code, style: TextStyle(color: Colors.grey[500], fontSize: 10)),
+              Text(part.code, style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5), fontSize: 10)),
               const Spacer(),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -206,7 +206,7 @@ class _CashierPageState extends State<CashierPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(part.name, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            Text(part.code, style: TextStyle(color: Colors.grey[600])),
+            Text(part.code, style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6))),
             const SizedBox(height: 24),
             const Text('Pilih Tipe Harga:', style: TextStyle(fontWeight: FontWeight.bold)),
             const SizedBox(height: 12),
@@ -271,7 +271,7 @@ class _CashierPageState extends State<CashierPage> {
 
   Widget _buildCartItemsList(WorkshopProvider provider, NumberFormat format) {
     if (provider.cartItems.isEmpty) {
-      return Center(child: Text('Keranjang kosong', style: TextStyle(color: Colors.grey[400])));
+      return Center(child: Text('Keranjang kosong', style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.4))));
     }
     return ListView.builder(
       itemCount: provider.cartItems.length,
@@ -319,9 +319,9 @@ class _CashierPageState extends State<CashierPage> {
               Row(
                 children: [
                   if (item.isService)
-                    Text('Jasa • ${item.priceType ?? "Umum"}', style: TextStyle(color: Colors.grey[500], fontSize: 10))
+                    Text('Jasa • ${item.priceType ?? "Umum"}', style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5), fontSize: 10))
                   else
-                    Text('${item.itemCode ?? "Part"} • ${item.priceType ?? "Ecer"}', style: TextStyle(color: Colors.grey[500], fontSize: 10)),
+                    Text('${item.itemCode ?? "Part"} • ${item.priceType ?? "Ecer"}', style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5), fontSize: 10)),
                 ],
               ),
               const Divider(height: 16),
@@ -330,7 +330,7 @@ class _CashierPageState extends State<CashierPage> {
                 children: [
                   Text(
                     format.format(item.price),
-                    style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                    style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7), fontSize: 12),
                   ),
                   Container(
                     height: 36,

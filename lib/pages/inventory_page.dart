@@ -72,7 +72,7 @@ class _InventoryPageState extends State<InventoryPage> {
                   padding: const EdgeInsets.symmetric(horizontal: 12),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.grey),
+                    border: Border.all(color: Theme.of(context).dividerColor.withOpacity(0.2)),
                   ),
                   child: DropdownButton<String>(
                     value: _filterStatus,

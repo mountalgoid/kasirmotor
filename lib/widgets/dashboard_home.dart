@@ -69,7 +69,7 @@ class _DashboardHomeState extends State<DashboardHome> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text('Dashboard', style: Theme.of(context).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold)),
-                    Text('Selamat datang kembali di Ibrahim Part', style: TextStyle(color: Colors.grey[600])),
+                    Text('Selamat datang kembali di Ibrahim Part', style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6))),
                   ],
                 ),
                 ElevatedButton.icon(
@@ -143,7 +143,7 @@ class _DashboardHomeState extends State<DashboardHome> {
 
     return Card(
       elevation: 0,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16), side: BorderSide(color: Colors.grey.withOpacity(0.2))),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16), side: BorderSide(color: Theme.of(context).dividerColor.withOpacity(0.1))),
       child: Padding(
         padding: const EdgeInsets.all(24),
         child: Column(
@@ -220,7 +220,10 @@ class _DashboardHomeState extends State<DashboardHome> {
                               return touchedSpots.map((spot) {
                                 return LineTooltipItem(
                                   format.format(spot.y),
-                                  const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                                  TextStyle(
+                                    color: Theme.of(context).colorScheme.onSurface,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 );
                               }).toList();
                             },
@@ -402,7 +405,7 @@ class _DashboardHomeState extends State<DashboardHome> {
                           tx.items.map((i) => i.name).join(', '),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: TextStyle(fontSize: 10, color: Colors.grey[600], fontStyle: FontStyle.italic),
+                          style: TextStyle(fontSize: 10, color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5), fontStyle: FontStyle.italic),
                         ),
                       ],
                     ),
@@ -507,7 +510,7 @@ class _DashboardHomeState extends State<DashboardHome> {
                                 children: [
                                   Text(item.name, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500)),
                                   if (item.itemCode != null)
-                                    Text(item.itemCode!, style: TextStyle(fontSize: 10, color: Colors.grey[600])),
+                                    Text(item.itemCode!, style: TextStyle(fontSize: 10, color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5))),
                                 ],
                               ),
                             ),
@@ -676,7 +679,7 @@ class _DashboardHomeState extends State<DashboardHome> {
                   Expanded(
                     child: Text(
                       title,
-                      style: TextStyle(color: Colors.grey[700], fontSize: 10, fontWeight: FontWeight.w600),
+                      style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7), fontSize: 10, fontWeight: FontWeight.w600),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),

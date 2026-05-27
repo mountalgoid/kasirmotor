@@ -49,8 +49,10 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: Colors.redAccent,
+      backgroundColor: isDark ? Theme.of(context).scaffoldBackgroundColor : Colors.redAccent,
       body: Center(
         child: AnimatedBuilder(
           animation: _controller,
@@ -64,21 +66,21 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                   children: [
                     Container(
                       padding: const EdgeInsets.all(24),
-                      decoration: const BoxDecoration(
-                        color: Colors.white,
+                      decoration: BoxDecoration(
+                        color: isDark ? Theme.of(context).colorScheme.surfaceContainerHighest : Colors.white,
                         shape: BoxShape.circle,
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black26,
+                            color: isDark ? Colors.black45 : Colors.black26,
                             blurRadius: 20,
-                            offset: Offset(0, 10),
+                            offset: const Offset(0, 10),
                           ),
                         ],
                       ),
-                      child: const Icon(
+                      child: Icon(
                         Icons.motorcycle,
                         size: 80,
-                        color: Colors.redAccent,
+                        color: isDark ? Theme.of(context).colorScheme.primary : Colors.redAccent,
                       ),
                     ),
                     const SizedBox(height: 32),
@@ -87,9 +89,9 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                       style: GoogleFonts.poppins(
                         fontSize: 32,
                         fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                        color: isDark ? Theme.of(context).colorScheme.primary : Colors.white,
                         letterSpacing: 2,
-                        shadows: [
+                        shadows: isDark ? [] : [
                           const Shadow(
                             color: Colors.black26,
                             blurRadius: 10,
@@ -103,13 +105,13 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                       'Solusi Suku Cadang Terpercaya',
                       style: GoogleFonts.poppins(
                         fontSize: 16,
-                        color: Colors.white70,
+                        color: isDark ? Theme.of(context).colorScheme.onSurface.withOpacity(0.7) : Colors.white70,
                         letterSpacing: 1.2,
                       ),
                     ),
                     const SizedBox(height: 64),
-                    const CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(isDark ? Theme.of(context).colorScheme.primary : Colors.white),
                     ),
                   ],
                 ),

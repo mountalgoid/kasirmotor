@@ -55,12 +55,19 @@ class _ResponsiveWrapperState extends State<ResponsiveWrapper> {
                 children: [
                   DrawerHeader(
                     decoration: BoxDecoration(color: Theme.of(context).colorScheme.primary),
-                    child: const Column(
+                    child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        CircleAvatar(radius: 30, backgroundColor: Colors.white, child: Icon(Icons.motorcycle, size: 30)),
-                        SizedBox(height: 12),
-                        Text('Ibrahim Part', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+                        CircleAvatar(
+                          radius: 30,
+                          backgroundColor: Theme.of(context).colorScheme.onPrimary,
+                          child: Icon(Icons.motorcycle, size: 30, color: Theme.of(context).colorScheme.primary)
+                        ),
+                        const SizedBox(height: 12),
+                        Text(
+                          'Ibrahim Part',
+                          style: TextStyle(color: Theme.of(context).colorScheme.onPrimary, fontSize: 18, fontWeight: FontWeight.bold)
+                        ),
                       ],
                     ),
                   ),
