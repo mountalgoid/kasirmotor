@@ -178,7 +178,7 @@ class _CashierPageState extends State<CashierPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(part.name, style: TextStyle(fontWeight: FontWeight.bold, color: isOutOfStock ? Colors.grey : Colors.black87), maxLines: 2, overflow: TextOverflow.ellipsis),
+              Text(part.name, style: TextStyle(fontWeight: FontWeight.bold, color: isOutOfStock ? Colors.grey : Theme.of(context).colorScheme.onSurface), maxLines: 2, overflow: TextOverflow.ellipsis),
               Text(part.code, style: TextStyle(color: Colors.grey[500], fontSize: 10)),
               const Spacer(),
               Row(
@@ -281,7 +281,7 @@ class _CashierPageState extends State<CashierPage> {
           margin: const EdgeInsets.only(bottom: 12),
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: Theme.of(context).cardColor,
             borderRadius: BorderRadius.circular(12),
             boxShadow: [
               BoxShadow(
@@ -300,7 +300,11 @@ class _CashierPageState extends State<CashierPage> {
                   Expanded(
                     child: Text(
                       item.name,
-                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),

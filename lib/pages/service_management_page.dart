@@ -69,9 +69,9 @@ class _ServiceManagementPageState extends State<ServiceManagementPage> {
                         ],
                         rows: filteredServices.map((service) => DataRow(
                           cells: [
-                            DataCell(Text(service.name)),
-                            DataCell(Text(service.category)),
-                            DataCell(Text(currencyFormat.format(service.price))),
+                            DataCell(Text(service.name, style: TextStyle(color: Theme.of(context).colorScheme.onSurface))),
+                            DataCell(Text(service.category, style: TextStyle(color: Theme.of(context).colorScheme.onSurface))),
+                            DataCell(Text(currencyFormat.format(service.price), style: TextStyle(color: Theme.of(context).colorScheme.onSurface))),
                             DataCell(
                               Row(
                                 mainAxisSize: MainAxisSize.min,

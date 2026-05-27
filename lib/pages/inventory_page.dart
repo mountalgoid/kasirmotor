@@ -116,13 +116,13 @@ class _InventoryPageState extends State<InventoryPage> {
                       final isLow = part.stock < 5 && !isOutOfStock;
 
                       return DataRow(cells: [
-                        DataCell(Text(part.code)),
-                        DataCell(Text(part.name)),
-                        DataCell(Text(currencyFormat.format(part.hargaBeli))),
-                        DataCell(Text(currencyFormat.format(part.hargaSales))),
-                        DataCell(Text(currencyFormat.format(part.hargaBengkel))),
-                        DataCell(Text(currencyFormat.format(part.hargaEcer))),
-                        DataCell(Text(part.stock.toString())),
+                        DataCell(Text(part.code, style: TextStyle(color: Theme.of(context).colorScheme.onSurface))),
+                        DataCell(Text(part.name, style: TextStyle(color: Theme.of(context).colorScheme.onSurface))),
+                        DataCell(Text(currencyFormat.format(part.hargaBeli), style: TextStyle(color: Theme.of(context).colorScheme.onSurface))),
+                        DataCell(Text(currencyFormat.format(part.hargaSales), style: TextStyle(color: Theme.of(context).colorScheme.onSurface))),
+                        DataCell(Text(currencyFormat.format(part.hargaBengkel), style: TextStyle(color: Theme.of(context).colorScheme.onSurface))),
+                        DataCell(Text(currencyFormat.format(part.hargaEcer), style: TextStyle(color: Theme.of(context).colorScheme.onSurface))),
+                        DataCell(Text(part.stock.toString(), style: TextStyle(color: Theme.of(context).colorScheme.onSurface))),
                         DataCell(
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),

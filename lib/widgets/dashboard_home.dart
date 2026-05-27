@@ -697,7 +697,7 @@ class _DashboardHomeState extends State<DashboardHome> {
                   value,
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.bold,
-                    color: Colors.black87,
+                    color: Theme.of(context).colorScheme.onSurface,
                     fontSize: 16
                   ),
                 ),
