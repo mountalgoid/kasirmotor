@@ -43,12 +43,20 @@ class _CashierPageState extends State<CashierPage> {
     ).toList();
 
     return Scaffold(
-      appBar: isMobile ? null : AppBar(
-        title: const Text('Kasir Ibrahim Part'),
+      appBar: AppBar(
+        title: Text(isMobile ? 'Kasir' : 'Kasir Ibrahim Part'),
         actions: [
-          IconButton(icon: const Icon(Icons.person_add_alt_1), onPressed: () => _showAddCustomerDialog(context)),
-          IconButton(icon: const Icon(Icons.delete_sweep), onPressed: () => provider.clearCart()),
-          const SizedBox(width: 16),
+          IconButton(
+            icon: const Icon(Icons.person_add_alt_1),
+            onPressed: () => _showAddCustomerDialog(context),
+            tooltip: 'Tambah Pelanggan',
+          ),
+          IconButton(
+            icon: const Icon(Icons.delete_sweep),
+            onPressed: () => provider.clearCart(),
+            tooltip: 'Kosongkan Keranjang',
+          ),
+          const SizedBox(width: 8),
         ],
       ),
       body: isMobile
@@ -145,7 +153,7 @@ class _CashierPageState extends State<CashierPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(service.name, style: const TextStyle(fontWeight: FontWeight.bold), maxLines: 1, overflow: TextOverflow.ellipsis),
-            Text(service.category, style: TextStyle(fontSize: 10, color: Colors.grey[600])),
+            Text(service.category, style: TextStyle(fontSize: 10, color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6))),
             const SizedBox(height: 4),
             Text(format.format(service.price), style: const TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
           ],
@@ -170,8 +178,8 @@ class _CashierPageState extends State<CashierPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(part.name, style: TextStyle(fontWeight: FontWeight.bold, color: isOutOfStock ? Colors.grey : Colors.black87), maxLines: 2, overflow: TextOverflow.ellipsis),
-              Text(part.code, style: TextStyle(color: Colors.grey[500], fontSize: 10)),
+              Text(part.name, style: TextStyle(fontWeight: FontWeight.bold, color: isOutOfStock ? Colors.grey : Theme.of(context).colorScheme.onSurface), maxLines: 2, overflow: TextOverflow.ellipsis),
+              Text(part.code, style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5), fontSize: 10)),
               const Spacer(),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -198,7 +206,7 @@ class _CashierPageState extends State<CashierPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(part.name, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            Text(part.code, style: TextStyle(color: Colors.grey[600])),
+            Text(part.code, style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6))),
             const SizedBox(height: 24),
             const Text('Pilih Tipe Harga:', style: TextStyle(fontWeight: FontWeight.bold)),
             const SizedBox(height: 12),
@@ -263,7 +271,7 @@ class _CashierPageState extends State<CashierPage> {
 
   Widget _buildCartItemsList(WorkshopProvider provider, NumberFormat format) {
     if (provider.cartItems.isEmpty) {
-      return Center(child: Text('Keranjang kosong', style: TextStyle(color: Colors.grey[400])));
+      return Center(child: Text('Keranjang kosong', style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.4))));
     }
     return ListView.builder(
       itemCount: provider.cartItems.length,
@@ -273,7 +281,7 @@ class _CashierPageState extends State<CashierPage> {
           margin: const EdgeInsets.only(bottom: 12),
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: Theme.of(context).cardColor,
             borderRadius: BorderRadius.circular(12),
             boxShadow: [
               BoxShadow(
@@ -292,7 +300,11 @@ class _CashierPageState extends State<CashierPage> {
                   Expanded(
                     child: Text(
                       item.name,
-                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -307,9 +319,9 @@ class _CashierPageState extends State<CashierPage> {
               Row(
                 children: [
                   if (item.isService)
-                    Text('Jasa • ${item.priceType ?? "Umum"}', style: TextStyle(color: Colors.grey[500], fontSize: 10))
+                    Text('Jasa • ${item.priceType ?? "Umum"}', style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5), fontSize: 10))
                   else
-                    Text('${item.itemCode ?? "Part"} • ${item.priceType ?? "Ecer"}', style: TextStyle(color: Colors.grey[500], fontSize: 10)),
+                    Text('${item.itemCode ?? "Part"} • ${item.priceType ?? "Ecer"}', style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5), fontSize: 10)),
                 ],
               ),
               const Divider(height: 16),
@@ -318,7 +330,7 @@ class _CashierPageState extends State<CashierPage> {
                 children: [
                   Text(
                     format.format(item.price),
-                    style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                    style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7), fontSize: 12),
                   ),
                   Container(
                     height: 36,
@@ -438,7 +450,9 @@ class _CashierPageState extends State<CashierPage> {
           child: Column(
             children: [
               const Text('Keranjang Belanja', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 24),
+              const SizedBox(height: 16),
+              _buildCustomerSelector(provider),
+              const SizedBox(height: 16),
               Expanded(child: _buildCartItemsList(provider, format)),
               const Divider(),
               _buildTotalSection(provider, format),

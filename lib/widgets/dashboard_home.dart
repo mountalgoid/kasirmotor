@@ -69,7 +69,7 @@ class _DashboardHomeState extends State<DashboardHome> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text('Dashboard', style: Theme.of(context).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold)),
-                    Text('Selamat datang kembali di Ibrahim Part', style: TextStyle(color: Colors.grey[600])),
+                    Text('Selamat datang kembali di Ibrahim Part', style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6))),
                   ],
                 ),
                 ElevatedButton.icon(
@@ -143,7 +143,7 @@ class _DashboardHomeState extends State<DashboardHome> {
 
     return Card(
       elevation: 0,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16), side: BorderSide(color: Colors.grey.withOpacity(0.2))),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16), side: BorderSide(color: Theme.of(context).dividerColor.withOpacity(0.1))),
       child: Padding(
         padding: const EdgeInsets.all(24),
         child: Column(
@@ -220,7 +220,10 @@ class _DashboardHomeState extends State<DashboardHome> {
                               return touchedSpots.map((spot) {
                                 return LineTooltipItem(
                                   format.format(spot.y),
-                                  const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                                  TextStyle(
+                                    color: Theme.of(context).colorScheme.onSurface,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 );
                               }).toList();
                             },
@@ -391,8 +394,22 @@ class _DashboardHomeState extends State<DashboardHome> {
                       child: const Icon(Icons.receipt_long, color: Colors.red, size: 20),
                     ),
                     title: Text(tx.customer?.name ?? 'Umum', style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
-                    subtitle: Text(DateFormat('HH:mm').format(tx.date), style: const TextStyle(fontSize: 12)),
-                    trailing: Text(format.format(tx.totalAmount), style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.green)),
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '${DateFormat('HH:mm').format(tx.date)} • ${tx.items.length} item',
+                          style: const TextStyle(fontSize: 11)
+                        ),
+                        Text(
+                          tx.items.map((i) => i.name).join(', '),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(fontSize: 10, color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5), fontStyle: FontStyle.italic),
+                        ),
+                      ],
+                    ),
+                    trailing: Text(format.format(tx.totalAmount), style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.green, fontSize: 13)),
                   );
                 },
               ),
@@ -452,18 +469,63 @@ class _DashboardHomeState extends State<DashboardHome> {
                   separatorBuilder: (_, __) => const Divider(),
                   itemBuilder: (context, index) {
                     final tx = provider.transactions[index];
-                    return ListTile(
-                      contentPadding: EdgeInsets.zero,
-                      title: Text(tx.customer?.name ?? 'Umum', style: const TextStyle(fontWeight: FontWeight.bold)),
-                      subtitle: Text('${DateFormat('dd/MM/yy HH:mm').format(tx.date)} • ${tx.items.length} item'),
+                    return ExpansionTile(
+                      tilePadding: EdgeInsets.zero,
+                      childrenPadding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                      shape: const RoundedRectangleBorder(side: BorderSide.none),
+                      collapsedShape: const RoundedRectangleBorder(side: BorderSide.none),
+                      title: Text(tx.customer?.name ?? 'Umum', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                      subtitle: Text('${DateFormat('dd/MM/yy HH:mm').format(tx.date)} • ${tx.items.length} item', style: const TextStyle(fontSize: 12)),
                       trailing: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
-                          Text(format.format(tx.totalAmount), style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.red)),
+                          Text(format.format(tx.totalAmount), style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.red, fontSize: 14)),
                           Text('Profit: ${format.format(tx.totalProfit)}', style: const TextStyle(fontSize: 10, color: Colors.green)),
                         ],
                       ),
+                      children: tx.items.map((item) => Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 4),
+                        child: Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                              decoration: BoxDecoration(
+                                color: item.isService ? Colors.blue.withOpacity(0.1) : Colors.orange.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: Text(
+                                item.isService ? 'Jasa' : 'Part',
+                                style: TextStyle(
+                                  fontSize: 9,
+                                  color: item.isService ? Colors.blue : Colors.orange,
+                                  fontWeight: FontWeight.bold
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(item.name, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500)),
+                                  if (item.itemCode != null)
+                                    Text(item.itemCode!, style: TextStyle(fontSize: 10, color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5))),
+                                ],
+                              ),
+                            ),
+                            Text('${item.quantity}x ', style: const TextStyle(fontSize: 12)),
+                            SizedBox(
+                              width: 80,
+                              child: Text(
+                                format.format(item.total),
+                                textAlign: TextAlign.right,
+                                style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)
+                              ),
+                            ),
+                          ],
+                        ),
+                      )).toList(),
                     );
                   },
                 ),
@@ -617,7 +679,7 @@ class _DashboardHomeState extends State<DashboardHome> {
                   Expanded(
                     child: Text(
                       title,
-                      style: TextStyle(color: Colors.grey[700], fontSize: 10, fontWeight: FontWeight.w600),
+                      style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7), fontSize: 10, fontWeight: FontWeight.w600),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -638,7 +700,7 @@ class _DashboardHomeState extends State<DashboardHome> {
                   value,
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.bold,
-                    color: Colors.black87,
+                    color: Theme.of(context).colorScheme.onSurface,
                     fontSize: 16
                   ),
                 ),

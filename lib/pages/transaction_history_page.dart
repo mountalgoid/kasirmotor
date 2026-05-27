@@ -62,14 +62,14 @@ class TransactionHistoryPage extends StatelessWidget {
                                         child: Column(
                                           crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
-                                            Text('${item.name} x${item.quantity}'),
+                                            Text('${item.name} x${item.quantity}', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
                                             if (item.isService)
-                                               Text('Kategori: ${item.priceType ?? "Umum"}', style: TextStyle(color: Colors.grey[500], fontSize: 10))
+                                               Text('Kategori: ${item.priceType ?? "Umum"}', style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6), fontSize: 10))
                                             else ...[
                                               if (item.itemCode != null)
-                                                Text('Kode: ${item.itemCode!}', style: TextStyle(color: Colors.grey[500], fontSize: 10)),
+                                                Text('Kode: ${item.itemCode!}', style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6), fontSize: 10)),
                                               if (item.priceType != null)
-                                                Text('Tipe: ${item.priceType}', style: TextStyle(color: Colors.red[300], fontSize: 10)),
+                                                Text('Tipe: ${item.priceType}', style: TextStyle(color: Colors.redAccent.withOpacity(0.8), fontSize: 10)),
                                             ],
                                           ],
                                         ),

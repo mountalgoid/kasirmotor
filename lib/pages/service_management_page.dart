@@ -55,34 +55,42 @@ class _ServiceManagementPageState extends State<ServiceManagementPage> {
               child: Card(
                 clipBehavior: Clip.antiAlias,
                 child: SingleChildScrollView(
-                  child: DataTable(
-                    columns: const [
-                      DataColumn(label: Text('Nama Jasa')),
-                      DataColumn(label: Text('Kategori')),
-                      DataColumn(label: Text('Harga')),
-                      DataColumn(label: Text('Aksi')),
-                    ],
-                    rows: filteredServices.map((service) => DataRow(
-                      cells: [
-                        DataCell(Text(service.name)),
-                        DataCell(Text(service.category)),
-                        DataCell(Text(currencyFormat.format(service.price))),
-                        DataCell(
-                          Row(
-                            children: [
-                              IconButton(
-                                icon: const Icon(Icons.edit_outlined),
-                                onPressed: () => _showServiceDialog(context, service: service),
+                  scrollDirection: Axis.vertical,
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(minWidth: MediaQuery.of(context).size.width - 48),
+                      child: DataTable(
+                        columns: const [
+                          DataColumn(label: Text('Nama Jasa')),
+                          DataColumn(label: Text('Kategori')),
+                          DataColumn(label: Text('Harga')),
+                          DataColumn(label: Text('Aksi')),
+                        ],
+                        rows: filteredServices.map((service) => DataRow(
+                          cells: [
+                            DataCell(Text(service.name, style: TextStyle(color: Theme.of(context).colorScheme.onSurface))),
+                            DataCell(Text(service.category, style: TextStyle(color: Theme.of(context).colorScheme.onSurface))),
+                            DataCell(Text(currencyFormat.format(service.price), style: TextStyle(color: Theme.of(context).colorScheme.onSurface))),
+                            DataCell(
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  IconButton(
+                                    icon: const Icon(Icons.edit_outlined),
+                                    onPressed: () => _showServiceDialog(context, service: service),
+                                  ),
+                                  IconButton(
+                                    icon: const Icon(Icons.delete_outline, color: Colors.red),
+                                    onPressed: () => _showDeleteConfirmation(context, service),
+                                  ),
+                                ],
                               ),
-                              IconButton(
-                                icon: const Icon(Icons.delete_outline, color: Colors.red),
-                                onPressed: () => _showDeleteConfirmation(context, service),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    )).toList(),
+                            ),
+                          ],
+                        )).toList(),
+                      ),
+                    ),
                   ),
                 ),
               ),

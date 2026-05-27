@@ -53,36 +53,44 @@ class _CustomerPageState extends State<CustomerPage> {
               child: Card(
                 clipBehavior: Clip.antiAlias,
                 child: SingleChildScrollView(
-                  child: DataTable(
-                    columns: const [
-                      DataColumn(label: Text('Nama')),
-                      DataColumn(label: Text('Plat Nomor')),
-                      DataColumn(label: Text('Tipe Motor')),
-                      DataColumn(label: Text('Alamat')),
-                      DataColumn(label: Text('Aksi')),
-                    ],
-                    rows: filteredCustomers.map((customer) => DataRow(
-                      cells: [
-                        DataCell(Text(customer.name)),
-                        DataCell(Text(customer.plateNumber)),
-                        DataCell(Text(customer.bikeType)),
-                        DataCell(Text(customer.address)),
-                        DataCell(
-                          Row(
-                            children: [
-                              IconButton(
-                                icon: const Icon(Icons.edit_outlined),
-                                onPressed: () => _showCustomerDialog(context, customer: customer),
+                  scrollDirection: Axis.vertical,
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(minWidth: MediaQuery.of(context).size.width - 48),
+                      child: DataTable(
+                        columns: const [
+                          DataColumn(label: Text('Nama')),
+                          DataColumn(label: Text('Plat Nomor')),
+                          DataColumn(label: Text('Tipe Motor')),
+                          DataColumn(label: Text('Alamat')),
+                          DataColumn(label: Text('Aksi')),
+                        ],
+                        rows: filteredCustomers.map((customer) => DataRow(
+                          cells: [
+                            DataCell(Text(customer.name, style: TextStyle(color: Theme.of(context).colorScheme.onSurface))),
+                            DataCell(Text(customer.plateNumber, style: TextStyle(color: Theme.of(context).colorScheme.onSurface))),
+                            DataCell(Text(customer.bikeType, style: TextStyle(color: Theme.of(context).colorScheme.onSurface))),
+                            DataCell(Text(customer.address, style: TextStyle(color: Theme.of(context).colorScheme.onSurface))),
+                            DataCell(
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  IconButton(
+                                    icon: const Icon(Icons.edit_outlined),
+                                    onPressed: () => _showCustomerDialog(context, customer: customer),
+                                  ),
+                                  IconButton(
+                                    icon: const Icon(Icons.delete_outline, color: Colors.red),
+                                    onPressed: () => _showDeleteConfirmation(context, customer),
+                                  ),
+                                ],
                               ),
-                              IconButton(
-                                icon: const Icon(Icons.delete_outline, color: Colors.red),
-                                onPressed: () => _showDeleteConfirmation(context, customer),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    )).toList(),
+                            ),
+                          ],
+                        )).toList(),
+                      ),
+                    ),
                   ),
                 ),
               ),

@@ -92,7 +92,7 @@ class SettingsPage extends StatelessWidget {
         const SizedBox(height: 12),
         Card(
           elevation: 0,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16), side: BorderSide(color: Colors.grey.withOpacity(0.2))),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16), side: BorderSide(color: Theme.of(context).dividerColor.withOpacity(0.1))),
           child: Column(children: items),
         ),
       ],
