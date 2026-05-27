@@ -30,8 +30,27 @@ class _DashboardHomeState extends State<DashboardHome> {
     final currencyFormat = NumberFormat.currency(locale: 'id', symbol: 'Rp ', decimalDigits: 0);
     final isMobile = MediaQuery.of(context).size.width < 850;
 
-    double totalRevenue = provider.transactions.fold(0, (sum, tx) => sum + tx.totalAmount);
-    double totalNetProfit = provider.transactions.fold(0, (sum, tx) => sum + tx.totalProfit);
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final yesterday = today.subtract(const Duration(days: 1));
+
+    final todayTransactions = provider.transactions.where((tx) =>
+      tx.date.isAfter(today.subtract(const Duration(seconds: 1)))).toList();
+
+    final yesterdayTransactions = provider.transactions.where((tx) =>
+      tx.date.isAfter(yesterday.subtract(const Duration(seconds: 1))) &&
+      tx.date.isBefore(today)).toList();
+
+    double todayRevenue = todayTransactions.fold(0, (sum, tx) => sum + tx.totalAmount);
+    double todayProfit = todayTransactions.fold(0, (sum, tx) => sum + tx.totalProfit);
+    int todayCount = todayTransactions.length;
+
+    double yesterdayRevenue = yesterdayTransactions.fold(0, (sum, tx) => sum + tx.totalAmount);
+
+    double revenueTrend = yesterdayRevenue == 0
+        ? (todayRevenue > 0 ? 100 : 0)
+        : ((todayRevenue - yesterdayRevenue) / yesterdayRevenue) * 100;
+
     int totalPartsSold = provider.transactions.fold(0, (sum, tx) => sum + tx.items.where((i) => !i.isService).length);
 
     return Scaffold(
@@ -73,8 +92,25 @@ class _DashboardHomeState extends State<DashboardHome> {
                   crossAxisSpacing: 16,
                   mainAxisSpacing: 16,
                   children: [
-                    _buildStatCard(context, 'Total Pendapatan', currencyFormat.format(totalRevenue), Icons.payments, Colors.green, onTap: () => _showRevenueDetails(context, provider, currencyFormat)),
-                    _buildStatCard(context, 'Transaksi', provider.transactions.length.toString(), Icons.shopping_cart, Colors.blue, onTap: () => _showTransactionDetails(context, provider, currencyFormat)),
+                    _buildStatCard(
+                      context,
+                      'Pendapatan Hari Ini',
+                      currencyFormat.format(todayRevenue),
+                      Icons.payments,
+                      Colors.green,
+                      subtitle: 'Laba: ${currencyFormat.format(todayProfit)}',
+                      trend: revenueTrend,
+                      onTap: () => _showRevenueDetails(context, provider, currencyFormat),
+                    ),
+                    _buildStatCard(
+                      context,
+                      'Transaksi Hari Ini',
+                      '$todayCount Transaksi',
+                      Icons.shopping_cart,
+                      Colors.blue,
+                      subtitle: 'Total: ${provider.transactions.length}',
+                      onTap: () => _showTransactionDetails(context, provider, currencyFormat),
+                    ),
                     _buildStatCard(context, 'Terjual', totalPartsSold.toString(), Icons.assignment_turned_in, Colors.purple, onTap: () => _showItemsSoldDetails(context, provider, currencyFormat)),
                     _buildStatCard(context, 'Stok Tipis', provider.spareParts.where((p) => p.stock < 5).length.toString(), Icons.warning, Colors.orange, onTap: () => _showLowStockDetails(context, provider, currencyFormat)),
                   ],
@@ -547,7 +583,16 @@ class _DashboardHomeState extends State<DashboardHome> {
     );
   }
 
-  Widget _buildStatCard(BuildContext context, String title, String value, IconData icon, Color color, {VoidCallback? onTap}) {
+  Widget _buildStatCard(
+    BuildContext context,
+    String title,
+    String value,
+    IconData icon,
+    Color color, {
+    String? subtitle,
+    double? trend,
+    VoidCallback? onTap,
+  }) {
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(16),
@@ -566,30 +611,47 @@ class _DashboardHomeState extends State<DashboardHome> {
                   Container(
                     padding: const EdgeInsets.all(6),
                     decoration: BoxDecoration(color: color.withOpacity(0.1), borderRadius: BorderRadius.circular(8)),
-                    child: Icon(icon, color: color, size: 20),
+                    child: Icon(icon, color: color, size: 18),
                   ),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: 8),
                   Expanded(
                     child: Text(
                       title,
-                      style: TextStyle(color: Colors.grey[600], fontSize: 11, fontWeight: FontWeight.w500),
+                      style: TextStyle(color: Colors.grey[700], fontSize: 10, fontWeight: FontWeight.w600),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
-                  if (onTap != null)
-                    Icon(Icons.chevron_right, size: 16, color: color.withOpacity(0.5)),
+                  if (trend != null)
+                    Icon(
+                      trend >= 0 ? Icons.trending_up : Icons.trending_down,
+                      size: 14,
+                      color: trend >= 0 ? Colors.green : Colors.red,
+                    ),
                 ],
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 8),
               FittedBox(
                 fit: BoxFit.scaleDown,
                 alignment: Alignment.centerLeft,
                 child: Text(
                   value,
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold, color: color, fontSize: 18),
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
+                    fontSize: 16
+                  ),
                 ),
               ),
+              if (subtitle != null) ...[
+                const SizedBox(height: 4),
+                Text(
+                  subtitle,
+                  style: TextStyle(color: color.withOpacity(0.8), fontSize: 9, fontWeight: FontWeight.w500),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
             ],
           ),
         ),
