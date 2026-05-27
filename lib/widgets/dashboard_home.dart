@@ -64,18 +64,17 @@ class _DashboardHomeState extends State<DashboardHome> {
             // Stat Cards
             LayoutBuilder(
               builder: (context, constraints) {
-                final crossAxisCount = constraints.maxWidth < 600 ? 2 : (constraints.maxWidth < 900 ? 3 : 5);
+                final crossAxisCount = constraints.maxWidth < 600 ? 2 : (constraints.maxWidth < 900 ? 2 : 4);
                 return GridView.count(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
                   crossAxisCount: crossAxisCount,
-                  childAspectRatio: constraints.maxWidth < 600 ? 1.4 : 1.5,
+                  childAspectRatio: constraints.maxWidth < 600 ? 1.4 : 1.8,
                   crossAxisSpacing: 16,
                   mainAxisSpacing: 16,
                   children: [
-                    _buildStatCard(context, 'Pendapatan Kotor', currencyFormat.format(totalRevenue), Icons.payments, Colors.red, onTap: () => _showRevenueDetails(context, provider, currencyFormat)),
-                    _buildStatCard(context, 'Pendapatan Bersih', currencyFormat.format(totalNetProfit), Icons.account_balance_wallet, Colors.green, onTap: () => _showRevenueDetails(context, provider, currencyFormat)),
-                    _buildStatCard(context, 'Transaksi', provider.transactions.length.toString(), Icons.shopping_cart, Colors.red, onTap: () => _showTransactionDetails(context, provider, currencyFormat)),
+                    _buildStatCard(context, 'Total Pendapatan', currencyFormat.format(totalRevenue), Icons.payments, Colors.green, onTap: () => _showRevenueDetails(context, provider, currencyFormat)),
+                    _buildStatCard(context, 'Transaksi', provider.transactions.length.toString(), Icons.shopping_cart, Colors.blue, onTap: () => _showTransactionDetails(context, provider, currencyFormat)),
                     _buildStatCard(context, 'Terjual', totalPartsSold.toString(), Icons.assignment_turned_in, Colors.purple, onTap: () => _showItemsSoldDetails(context, provider, currencyFormat)),
                     _buildStatCard(context, 'Stok Tipis', provider.spareParts.where((p) => p.stock < 5).length.toString(), Icons.warning, Colors.orange, onTap: () => _showLowStockDetails(context, provider, currencyFormat)),
                   ],
@@ -147,12 +146,18 @@ class _DashboardHomeState extends State<DashboardHome> {
                           leftTitles: AxisTitles(
                             sideTitles: SideTitles(
                               showTitles: true,
-                              reservedSize: 40,
+                              reservedSize: 45,
                               getTitlesWidget: (value, meta) {
-                                if (value == 0) return const Text('0');
-                                if (value >= 1000000) return Text('${(value / 1000000).toStringAsFixed(1)}M');
-                                if (value >= 1000) return Text('${(value / 1000).toStringAsFixed(0)}K');
-                                return Text(value.toStringAsFixed(0));
+                                if (value == 0) return const Text('0', style: TextStyle(fontSize: 10));
+                                String text = '';
+                                if (value >= 1000000) {
+                                  text = '${(value / 1000000).toStringAsFixed(1)}M';
+                                } else if (value >= 1000) {
+                                  text = '${(value / 1000).toStringAsFixed(0)}K';
+                                } else {
+                                  text = value.toStringAsFixed(0);
+                                }
+                                return Text(text, style: const TextStyle(fontSize: 10));
                               },
                             ),
                           ),
@@ -220,7 +225,10 @@ class _DashboardHomeState extends State<DashboardHome> {
             .where((tx) => tx.date.isAfter(hourStart.subtract(const Duration(seconds: 1))) &&
                            tx.date.isBefore(hourEnd))
             .fold(0.0, (sum, tx) => sum + tx.totalAmount);
-        data.add(ChartData(DateFormat('HH:00').format(time), amount));
+
+        // Only label every 4 hours to avoid overlap
+        String label = (i % 4 == 0 || i == 0 || i == 23) ? DateFormat('HH:00').format(time) : '';
+        data.add(ChartData(label, amount));
       }
     } else if (_chartFilter == '1 Minggu') {
       // Group by days (last 7 days)
@@ -262,7 +270,10 @@ class _DashboardHomeState extends State<DashboardHome> {
             .where((tx) => tx.date.isAfter(monthStart.subtract(const Duration(seconds: 1))) &&
                            tx.date.isBefore(nextMonth))
             .fold(0.0, (sum, tx) => sum + tx.totalAmount);
-        data.add(ChartData(DateFormat('MMM').format(date), amount));
+
+        // Only label every 2 months to avoid overlap
+        String label = (i % 2 == 0 || i == 0 || i == 11) ? DateFormat('MMM').format(date) : '';
+        data.add(ChartData(label, amount));
       }
     }
 
