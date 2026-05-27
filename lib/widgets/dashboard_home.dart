@@ -354,8 +354,13 @@ class _DashboardHomeState extends State<DashboardHome> {
                       backgroundColor: Colors.red.withOpacity(0.1),
                       child: const Icon(Icons.receipt_long, color: Colors.red, size: 20),
                     ),
-                    title: Text(tx.customer?.name ?? 'Umum', style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
-                    subtitle: Text(DateFormat('HH:mm').format(tx.date), style: const TextStyle(fontSize: 12)),
+                    title: Text(tx.customer?.name ?? 'Pelanggan Umum', style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
+                    subtitle: Text(
+                      '${DateFormat('HH:mm').format(tx.date)} • ${tx.items.map((i) => i.name).join(", ")}',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(fontSize: 12),
+                    ),
                     trailing: Text(format.format(tx.totalAmount), style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.green)),
                   );
                 },
