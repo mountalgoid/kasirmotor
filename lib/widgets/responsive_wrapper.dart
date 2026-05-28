@@ -61,7 +61,10 @@ class _ResponsiveWrapperState extends State<ResponsiveWrapper> {
                         CircleAvatar(
                           radius: 30,
                           backgroundColor: Theme.of(context).colorScheme.onPrimary,
-                          child: Icon(Icons.motorcycle, size: 30, color: Theme.of(context).colorScheme.primary)
+                          child: Padding(
+                            padding: const EdgeInsets.all(8),
+                            child: Image.asset('assets/images/logo.png'),
+                          ),
                         ),
                         const SizedBox(height: 12),
                         Text(
@@ -87,9 +90,15 @@ class _ResponsiveWrapperState extends State<ResponsiveWrapper> {
           if (!isMobile)
             NavigationRail(
               extended: MediaQuery.of(context).size.width > 1200,
-              leading: const Padding(
-                padding: EdgeInsets.symmetric(vertical: 24),
-                child: CircleAvatar(backgroundColor: Colors.red, child: Icon(Icons.motorcycle, color: Colors.white)),
+              leading: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 24),
+                child: CircleAvatar(
+                  backgroundColor: Theme.of(context).colorScheme.primary,
+                  child: Padding(
+                    padding: const EdgeInsets.all(6),
+                    child: Image.asset('assets/images/logo.png'),
+                  ),
+                ),
               ),
               destinations: const [
                 NavigationRailDestination(icon: Icon(Icons.dashboard_outlined), selectedIcon: Icon(Icons.dashboard), label: Text('Dashboard')),
