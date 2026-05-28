@@ -54,15 +54,20 @@ class _ResponsiveWrapperState extends State<ResponsiveWrapper> {
                 padding: EdgeInsets.zero,
                 children: [
                   DrawerHeader(
-                    decoration: BoxDecoration(color: Theme.of(context).colorScheme.primary),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.primary,
+                      borderRadius: const BorderRadius.vertical(bottom: Radius.circular(24)),
+                    ),
+                    margin: const EdgeInsets.only(bottom: 8),
                     child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Icon(Icons.motorcycle, color: Colors.white, size: 48),
+                        const Icon(Icons.motorcycle, color: Colors.white, size: 64),
                         const SizedBox(height: 12),
                         Text(
                           'Ibrahim Part',
-                          style: TextStyle(color: Theme.of(context).colorScheme.onPrimary, fontSize: 18, fontWeight: FontWeight.bold)
+                          style: TextStyle(color: Theme.of(context).colorScheme.onPrimary, fontSize: 22, fontWeight: FontWeight.bold)
                         ),
                       ],
                     ),
@@ -84,8 +89,8 @@ class _ResponsiveWrapperState extends State<ResponsiveWrapper> {
             NavigationRail(
               extended: MediaQuery.of(context).size.width > 1200,
               leading: const Padding(
-                padding: EdgeInsets.symmetric(vertical: 24),
-                child: Icon(Icons.motorcycle, size: 32),
+                padding: EdgeInsets.symmetric(vertical: 32, horizontal: 16),
+                child: Icon(Icons.motorcycle, size: 48),
               ),
               destinations: const [
                 NavigationRailDestination(icon: Icon(Icons.dashboard_outlined), selectedIcon: Icon(Icons.dashboard), label: Text('Dashboard')),

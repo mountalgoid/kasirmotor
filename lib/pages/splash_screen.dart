@@ -66,10 +66,10 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                   children: [
                     Icon(
                       Icons.motorcycle,
-                      size: 120,
+                      size: 180,
                       color: isDark ? Theme.of(context).colorScheme.primary : Colors.white,
                     ),
-                    const SizedBox(height: 32),
+                    const SizedBox(height: 16),
                     Text(
                       'Ibrahim Part',
                       style: GoogleFonts.poppins(
