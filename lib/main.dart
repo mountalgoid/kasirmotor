@@ -24,7 +24,7 @@ class BengkelProApp extends StatelessWidget {
       child: Consumer<ThemeProvider>(
         builder: (context, themeProvider, child) {
           return MaterialApp(
-            title: 'Bengkel Pro',
+            title: 'Ibrahim Part',
             debugShowCheckedModeBanner: false,
             themeMode: themeProvider.themeMode,
             theme: ThemeData(

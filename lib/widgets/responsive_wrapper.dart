@@ -39,7 +39,7 @@ class _ResponsiveWrapperState extends State<ResponsiveWrapper> {
     return Scaffold(
       appBar: isMobile
           ? AppBar(
-              title: Image.asset('assets/images/logo.png', height: 40),
+              title: const Text('Ibrahim Part'),
               actions: [
                 IconButton(
                   icon: Icon(themeProvider.themeMode == ThemeMode.light ? Icons.dark_mode : Icons.light_mode),
@@ -61,14 +61,14 @@ class _ResponsiveWrapperState extends State<ResponsiveWrapper> {
                         CircleAvatar(
                           radius: 30,
                           backgroundColor: Theme.of(context).colorScheme.onPrimary,
-                          child: Padding(
+                          child: const Padding(
                             padding: const EdgeInsets.all(8),
-                            child: Image.asset('assets/images/logo.png'),
+                            child: Icon(Icons.motorcycle, color: Colors.redAccent, size: 30),
                           ),
                         ),
                         const SizedBox(height: 12),
                         Text(
-                          'Bengkel Pro',
+                          'Ibrahim Part',
                           style: TextStyle(color: Theme.of(context).colorScheme.onPrimary, fontSize: 18, fontWeight: FontWeight.bold)
                         ),
                       ],
@@ -94,9 +94,9 @@ class _ResponsiveWrapperState extends State<ResponsiveWrapper> {
                 padding: const EdgeInsets.symmetric(vertical: 24),
                 child: CircleAvatar(
                   backgroundColor: Theme.of(context).colorScheme.primary,
-                  child: Padding(
+                  child: const Padding(
                     padding: const EdgeInsets.all(6),
-                    child: Image.asset('assets/images/logo.png'),
+                    child: Icon(Icons.motorcycle, color: Colors.white),
                   ),
                 ),
               ),

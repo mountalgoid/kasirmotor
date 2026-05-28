@@ -44,7 +44,7 @@ class _CashierPageState extends State<CashierPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(isMobile ? 'Kasir' : 'Sistem Kasir'),
+        title: Text(isMobile ? 'Kasir' : 'Kasir Ibrahim Part'),
         actions: [
           IconButton(
             icon: const Icon(Icons.person_add_alt_1),

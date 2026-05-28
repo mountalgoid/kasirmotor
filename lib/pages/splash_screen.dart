@@ -77,16 +77,15 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                           ),
                         ],
                       ),
-                      child: Image.asset(
-                        'assets/images/logo.png',
-                        width: 100,
-                        height: 100,
-                        fit: BoxFit.contain,
+                      child: const Icon(
+                        Icons.motorcycle,
+                        size: 100,
+                        color: Colors.redAccent,
                       ),
                     ),
                     const SizedBox(height: 32),
                     Text(
-                      'Bengkel Pro',
+                      'Ibrahim Part',
                       style: GoogleFonts.poppins(
                         fontSize: 32,
                         fontWeight: FontWeight.bold,

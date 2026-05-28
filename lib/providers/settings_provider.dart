@@ -1,14 +1,14 @@
 import 'package:flutter/foundation.dart';
 
 class SettingsProvider with ChangeNotifier {
-  String _workshopName = 'Bengkel Motor Pro';
+  String _workshopName = 'Ibrahim Part';
   String _workshopAddress = 'Jl. Raya Motor No. 123';
   String _workshopPhone = '0812-3456-7890';
   String _qrisImageUrl = '';
   String? _qrisLocalPath;
   String _bankName = 'BCA';
   String _bankAccountNumber = '1234567890';
-  String _bankAccountName = 'Bengkel Pro';
+  String _bankAccountName = 'Ibrahim Part';
 
   String get workshopName => _workshopName;
   String get workshopAddress => _workshopAddress;
