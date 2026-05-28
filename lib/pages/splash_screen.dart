@@ -64,27 +64,12 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Container(
-                      padding: const EdgeInsets.all(24),
-                      decoration: BoxDecoration(
-                        color: isDark ? Theme.of(context).colorScheme.surfaceContainerHighest : Colors.white,
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: isDark ? Colors.black45 : Colors.black26,
-                            blurRadius: 20,
-                            offset: const Offset(0, 10),
-                          ),
-                        ],
-                      ),
-                      child: Image.asset(
-                        'assets/images/logo.png',
-                        width: 100,
-                        height: 100,
-                        fit: BoxFit.contain,
-                      ),
+                    Image.asset(
+                      'assets/images/logo.png',
+                      height: 200,
+                      fit: BoxFit.contain,
                     ),
-                    const SizedBox(height: 32),
+                    const SizedBox(height: 16),
                     Text(
                       'Ibrahim Part',
                       style: GoogleFonts.poppins(
@@ -103,7 +88,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Solusi Suku Cadang Terpercaya',
+                      'Sistem Manajemen Bengkel Modern',
                       style: GoogleFonts.poppins(
                         fontSize: 16,
                         color: isDark ? Theme.of(context).colorScheme.onSurface.withOpacity(0.7) : Colors.white70,

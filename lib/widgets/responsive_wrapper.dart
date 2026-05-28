@@ -54,22 +54,20 @@ class _ResponsiveWrapperState extends State<ResponsiveWrapper> {
                 padding: EdgeInsets.zero,
                 children: [
                   DrawerHeader(
-                    decoration: BoxDecoration(color: Theme.of(context).colorScheme.primary),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.primary,
+                      borderRadius: const BorderRadius.vertical(bottom: Radius.circular(24)),
+                    ),
+                    margin: const EdgeInsets.only(bottom: 8),
                     child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        CircleAvatar(
-                          radius: 30,
-                          backgroundColor: Theme.of(context).colorScheme.onPrimary,
-                          child: Padding(
-                            padding: const EdgeInsets.all(8),
-                            child: Image.asset('assets/images/logo.png'),
-                          ),
-                        ),
+                        Image.asset('assets/images/logo.png', height: 72, fit: BoxFit.contain),
                         const SizedBox(height: 12),
                         Text(
                           'Ibrahim Part',
-                          style: TextStyle(color: Theme.of(context).colorScheme.onPrimary, fontSize: 18, fontWeight: FontWeight.bold)
+                          style: TextStyle(color: Theme.of(context).colorScheme.onPrimary, fontSize: 22, fontWeight: FontWeight.bold)
                         ),
                       ],
                     ),
@@ -91,14 +89,8 @@ class _ResponsiveWrapperState extends State<ResponsiveWrapper> {
             NavigationRail(
               extended: MediaQuery.of(context).size.width > 1200,
               leading: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 24),
-                child: CircleAvatar(
-                  backgroundColor: Theme.of(context).colorScheme.primary,
-                  child: Padding(
-                    padding: const EdgeInsets.all(6),
-                    child: Image.asset('assets/images/logo.png'),
-                  ),
-                ),
+                padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 16),
+                child: Image.asset('assets/images/logo.png', height: 56, fit: BoxFit.contain),
               ),
               destinations: const [
                 NavigationRailDestination(icon: Icon(Icons.dashboard_outlined), selectedIcon: Icon(Icons.dashboard), label: Text('Dashboard')),
