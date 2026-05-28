@@ -64,24 +64,10 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Container(
-                      padding: const EdgeInsets.all(24),
-                      decoration: BoxDecoration(
-                        color: isDark ? Theme.of(context).colorScheme.surfaceContainerHighest : Colors.white,
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: isDark ? Colors.black45 : Colors.black26,
-                            blurRadius: 20,
-                            offset: const Offset(0, 10),
-                          ),
-                        ],
-                      ),
-                      child: const Icon(
-                        Icons.motorcycle,
-                        size: 100,
-                        color: Colors.redAccent,
-                      ),
+                    Icon(
+                      Icons.motorcycle,
+                      size: 120,
+                      color: isDark ? Theme.of(context).colorScheme.primary : Colors.white,
                     ),
                     const SizedBox(height: 32),
                     Text(

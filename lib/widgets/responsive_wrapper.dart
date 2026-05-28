@@ -58,14 +58,7 @@ class _ResponsiveWrapperState extends State<ResponsiveWrapper> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        CircleAvatar(
-                          radius: 30,
-                          backgroundColor: Theme.of(context).colorScheme.onPrimary,
-                          child: const Padding(
-                            padding: const EdgeInsets.all(8),
-                            child: Icon(Icons.motorcycle, color: Colors.redAccent, size: 30),
-                          ),
-                        ),
+                        const Icon(Icons.motorcycle, color: Colors.white, size: 48),
                         const SizedBox(height: 12),
                         Text(
                           'Ibrahim Part',
@@ -90,15 +83,9 @@ class _ResponsiveWrapperState extends State<ResponsiveWrapper> {
           if (!isMobile)
             NavigationRail(
               extended: MediaQuery.of(context).size.width > 1200,
-              leading: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 24),
-                child: CircleAvatar(
-                  backgroundColor: Theme.of(context).colorScheme.primary,
-                  child: const Padding(
-                    padding: const EdgeInsets.all(6),
-                    child: Icon(Icons.motorcycle, color: Colors.white),
-                  ),
-                ),
+              leading: const Padding(
+                padding: EdgeInsets.symmetric(vertical: 24),
+                child: Icon(Icons.motorcycle, size: 32),
               ),
               destinations: const [
                 NavigationRailDestination(icon: Icon(Icons.dashboard_outlined), selectedIcon: Icon(Icons.dashboard), label: Text('Dashboard')),
