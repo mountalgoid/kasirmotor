@@ -66,8 +66,11 @@ class _DashboardHomeState extends State<DashboardHome> {
     double todayAvgTransactionValue = todayCount > 0 ? todayRevenue / todayCount : 0;
 
     double weekRevenue = weekTransactions.fold(0, (sum, tx) => sum + tx.totalAmount);
+    double weekProfit = weekTransactions.fold(0, (sum, tx) => sum + tx.totalProfit);
     double monthRevenue = monthTransactions.fold(0, (sum, tx) => sum + tx.totalAmount);
+    double monthProfit = monthTransactions.fold(0, (sum, tx) => sum + tx.totalProfit);
     double yearRevenue = yearTransactions.fold(0, (sum, tx) => sum + tx.totalAmount);
+    double yearProfit = yearTransactions.fold(0, (sum, tx) => sum + tx.totalProfit);
 
     double yesterdayRevenue = yesterdayTransactions.fold(0, (sum, tx) => sum + tx.totalAmount);
 
@@ -132,7 +135,7 @@ class _DashboardHomeState extends State<DashboardHome> {
                       currencyFormat.format(weekRevenue),
                       Icons.calendar_view_week,
                       Colors.teal,
-                      subtitle: 'Total Minggu Ini',
+                      subtitle: 'Laba: ${currencyFormat.format(weekProfit)}',
                       onTap: () => _showRevenueDetails(context, provider, currencyFormat),
                     ),
                     _buildStatCard(
@@ -141,7 +144,7 @@ class _DashboardHomeState extends State<DashboardHome> {
                       currencyFormat.format(monthRevenue),
                       Icons.calendar_month,
                       Colors.indigo,
-                      subtitle: 'Total Bulan Ini',
+                      subtitle: 'Laba: ${currencyFormat.format(monthProfit)}',
                       onTap: () => _showRevenueDetails(context, provider, currencyFormat),
                     ),
                     _buildStatCard(
@@ -150,7 +153,7 @@ class _DashboardHomeState extends State<DashboardHome> {
                       currencyFormat.format(yearRevenue),
                       Icons.analytics,
                       Colors.amber[900]!,
-                      subtitle: 'Total Tahun Ini',
+                      subtitle: 'Laba: ${currencyFormat.format(yearProfit)}',
                       onTap: () => _showRevenueDetails(context, provider, currencyFormat),
                     ),
                     _buildStatCard(
