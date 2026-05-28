@@ -77,10 +77,11 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                           ),
                         ],
                       ),
-                      child: Icon(
-                        Icons.motorcycle,
-                        size: 80,
-                        color: isDark ? Theme.of(context).colorScheme.primary : Colors.redAccent,
+                      child: Image.asset(
+                        'assets/images/logo.png',
+                        width: 100,
+                        height: 100,
+                        fit: BoxFit.contain,
                       ),
                     ),
                     const SizedBox(height: 32),
