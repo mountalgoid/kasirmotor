@@ -33,6 +33,9 @@ class _DashboardHomeState extends State<DashboardHome> {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     final yesterday = today.subtract(const Duration(days: 1));
+    final startOfWeek = today.subtract(Duration(days: now.weekday - 1));
+    final startOfMonth = DateTime(now.year, now.month, 1);
+    final startOfYear = DateTime(now.year, 1, 1);
 
     final todayTransactions = provider.transactions.where((tx) =>
       tx.date.isAfter(today.subtract(const Duration(seconds: 1)))).toList();
@@ -41,9 +44,22 @@ class _DashboardHomeState extends State<DashboardHome> {
       tx.date.isAfter(yesterday.subtract(const Duration(seconds: 1))) &&
       tx.date.isBefore(today)).toList();
 
+    final weekTransactions = provider.transactions.where((tx) =>
+      tx.date.isAfter(startOfWeek.subtract(const Duration(seconds: 1)))).toList();
+
+    final monthTransactions = provider.transactions.where((tx) =>
+      tx.date.isAfter(startOfMonth.subtract(const Duration(seconds: 1)))).toList();
+
+    final yearTransactions = provider.transactions.where((tx) =>
+      tx.date.isAfter(startOfYear.subtract(const Duration(seconds: 1)))).toList();
+
     double todayRevenue = todayTransactions.fold(0, (sum, tx) => sum + tx.totalAmount);
     double todayProfit = todayTransactions.fold(0, (sum, tx) => sum + tx.totalProfit);
     int todayCount = todayTransactions.length;
+
+    double weekRevenue = weekTransactions.fold(0, (sum, tx) => sum + tx.totalAmount);
+    double monthRevenue = monthTransactions.fold(0, (sum, tx) => sum + tx.totalAmount);
+    double yearRevenue = yearTransactions.fold(0, (sum, tx) => sum + tx.totalAmount);
 
     double yesterdayRevenue = yesterdayTransactions.fold(0, (sum, tx) => sum + tx.totalAmount);
 
@@ -88,7 +104,7 @@ class _DashboardHomeState extends State<DashboardHome> {
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
                   crossAxisCount: crossAxisCount,
-                  childAspectRatio: constraints.maxWidth < 600 ? 1.4 : 1.8,
+                  childAspectRatio: constraints.maxWidth < 600 ? 1.3 : 1.7,
                   crossAxisSpacing: 16,
                   mainAxisSpacing: 16,
                   children: [
@@ -96,10 +112,37 @@ class _DashboardHomeState extends State<DashboardHome> {
                       context,
                       'Pendapatan Hari Ini',
                       currencyFormat.format(todayRevenue),
-                      Icons.payments,
+                      Icons.today,
                       Colors.green,
                       subtitle: 'Laba: ${currencyFormat.format(todayProfit)}',
                       trend: revenueTrend,
+                      onTap: () => _showRevenueDetails(context, provider, currencyFormat),
+                    ),
+                    _buildStatCard(
+                      context,
+                      'Minggu Ini',
+                      currencyFormat.format(weekRevenue),
+                      Icons.calendar_view_week,
+                      Colors.teal,
+                      subtitle: 'Total Minggu Ini',
+                      onTap: () => _showRevenueDetails(context, provider, currencyFormat),
+                    ),
+                    _buildStatCard(
+                      context,
+                      'Bulan Ini',
+                      currencyFormat.format(monthRevenue),
+                      Icons.calendar_month,
+                      Colors.indigo,
+                      subtitle: 'Total Bulan Ini',
+                      onTap: () => _showRevenueDetails(context, provider, currencyFormat),
+                    ),
+                    _buildStatCard(
+                      context,
+                      'Tahun Ini',
+                      currencyFormat.format(yearRevenue),
+                      Icons.analytics,
+                      Colors.amber[900]!,
+                      subtitle: 'Total Tahun Ini',
                       onTap: () => _showRevenueDetails(context, provider, currencyFormat),
                     ),
                     _buildStatCard(
@@ -112,7 +155,6 @@ class _DashboardHomeState extends State<DashboardHome> {
                       onTap: () => _showTransactionDetails(context, provider, currencyFormat),
                     ),
                     _buildStatCard(context, 'Terjual', totalPartsSold.toString(), Icons.assignment_turned_in, Colors.purple, onTap: () => _showItemsSoldDetails(context, provider, currencyFormat)),
-                    _buildStatCard(context, 'Stok Tipis', provider.spareParts.where((p) => p.stock < 5).length.toString(), Icons.warning, Colors.orange, onTap: () => _showLowStockDetails(context, provider, currencyFormat)),
                   ],
                 );
               }
@@ -420,12 +462,23 @@ class _DashboardHomeState extends State<DashboardHome> {
   }
 
   void _showRevenueDetails(BuildContext context, WorkshopProvider provider, NumberFormat format) {
-    double cashRev = provider.transactions.where((t) => t.paymentMethod == PaymentMethod.cash).fold(0, (sum, t) => sum + t.totalAmount);
-    double transferRev = provider.transactions.where((t) => t.paymentMethod == PaymentMethod.transfer).fold(0, (sum, t) => sum + t.totalAmount);
-    double totalProfit = provider.transactions.fold(0, (sum, t) => sum + t.totalProfit);
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final startOfWeek = today.subtract(Duration(days: now.weekday - 1));
+    final startOfMonth = DateTime(now.year, now.month, 1);
+    final startOfYear = DateTime(now.year, 1, 1);
+
+    double getRev(List<Transaction> txs) => txs.fold(0, (sum, t) => sum + t.totalAmount);
+    double getProfit(List<Transaction> txs) => txs.fold(0, (sum, t) => sum + t.totalProfit);
+
+    final todayT = provider.transactions.where((tx) => tx.date.isAfter(today.subtract(const Duration(seconds: 1)))).toList();
+    final weekT = provider.transactions.where((tx) => tx.date.isAfter(startOfWeek.subtract(const Duration(seconds: 1)))).toList();
+    final monthT = provider.transactions.where((tx) => tx.date.isAfter(startOfMonth.subtract(const Duration(seconds: 1)))).toList();
+    final yearT = provider.transactions.where((tx) => tx.date.isAfter(startOfYear.subtract(const Duration(seconds: 1)))).toList();
 
     showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
       builder: (context) => Padding(
         padding: const EdgeInsets.all(24),
@@ -433,15 +486,33 @@ class _DashboardHomeState extends State<DashboardHome> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Detail Pendapatan', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const Text('Ringkasan Pendapatan', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             const SizedBox(height: 24),
-            _detailRow('Total Pendapatan Kotor', format.format(cashRev + transferRev), isBold: true),
-            _detailRow('Total Pendapatan Bersih (Laba)', format.format(totalProfit), color: Colors.green, isBold: true),
-            const Divider(height: 32),
-            _detailRow('Pembayaran Tunai', format.format(cashRev)),
-            _detailRow('Pembayaran Transfer/QRIS', format.format(transferRev)),
+            _revenueSection('Hari Ini', getRev(todayT), getProfit(todayT), format, Colors.green),
+            const Divider(),
+            _revenueSection('Minggu Ini', getRev(weekT), getProfit(weekT), format, Colors.teal),
+            const Divider(),
+            _revenueSection('Bulan Ini', getRev(monthT), getProfit(monthT), format, Colors.indigo),
+            const Divider(),
+            _revenueSection('Tahun Ini', getRev(yearT), getProfit(yearT), format, Colors.orange),
+            const SizedBox(height: 16),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _revenueSection(String label, double revenue, double profit, NumberFormat format, Color color) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(label, style: TextStyle(fontWeight: FontWeight.bold, color: color)),
+          const SizedBox(height: 8),
+          _detailRow('Omzet', format.format(revenue)),
+          _detailRow('Laba Bersih', format.format(profit), color: Colors.green),
+        ],
       ),
     );
   }
