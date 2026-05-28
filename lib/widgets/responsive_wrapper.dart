@@ -39,7 +39,7 @@ class _ResponsiveWrapperState extends State<ResponsiveWrapper> {
     return Scaffold(
       appBar: isMobile
           ? AppBar(
-              title: const Text('Ibrahim Part'),
+              title: Image.asset('assets/images/logo.png', height: 40),
               actions: [
                 IconButton(
                   icon: Icon(themeProvider.themeMode == ThemeMode.light ? Icons.dark_mode : Icons.light_mode),
@@ -68,7 +68,7 @@ class _ResponsiveWrapperState extends State<ResponsiveWrapper> {
                         ),
                         const SizedBox(height: 12),
                         Text(
-                          'Ibrahim Part',
+                          'Bengkel Pro',
                           style: TextStyle(color: Theme.of(context).colorScheme.onPrimary, fontSize: 18, fontWeight: FontWeight.bold)
                         ),
                       ],

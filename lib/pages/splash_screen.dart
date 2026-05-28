@@ -86,7 +86,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                     ),
                     const SizedBox(height: 32),
                     Text(
-                      'Ibrahim Part',
+                      'Bengkel Pro',
                       style: GoogleFonts.poppins(
                         fontSize: 32,
                         fontWeight: FontWeight.bold,
@@ -103,7 +103,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Solusi Suku Cadang Terpercaya',
+                      'Sistem Manajemen Bengkel Modern',
                       style: GoogleFonts.poppins(
                         fontSize: 16,
                         color: isDark ? Theme.of(context).colorScheme.onSurface.withOpacity(0.7) : Colors.white70,

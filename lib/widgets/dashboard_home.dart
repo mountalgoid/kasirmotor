@@ -57,6 +57,14 @@ class _DashboardHomeState extends State<DashboardHome> {
     double todayProfit = todayTransactions.fold(0, (sum, tx) => sum + tx.totalProfit);
     int todayCount = todayTransactions.length;
 
+    double todayCashRevenue = todayTransactions
+        .where((tx) => tx.paymentMethod == PaymentMethod.cash)
+        .fold(0, (sum, tx) => sum + tx.totalAmount);
+    double todayTransferRevenue = todayTransactions
+        .where((tx) => tx.paymentMethod == PaymentMethod.transfer)
+        .fold(0, (sum, tx) => sum + tx.totalAmount);
+    double todayAvgTransactionValue = todayCount > 0 ? todayRevenue / todayCount : 0;
+
     double weekRevenue = weekTransactions.fold(0, (sum, tx) => sum + tx.totalAmount);
     double monthRevenue = monthTransactions.fold(0, (sum, tx) => sum + tx.totalAmount);
     double yearRevenue = yearTransactions.fold(0, (sum, tx) => sum + tx.totalAmount);
@@ -85,7 +93,7 @@ class _DashboardHomeState extends State<DashboardHome> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text('Dashboard', style: Theme.of(context).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold)),
-                    Text('Selamat datang kembali di Ibrahim Part', style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6))),
+                    Text('Analisis Bisnis Realtime', style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6))),
                   ],
                 ),
                 ElevatedButton.icon(
@@ -114,7 +122,7 @@ class _DashboardHomeState extends State<DashboardHome> {
                       currencyFormat.format(todayRevenue),
                       Icons.today,
                       Colors.green,
-                      subtitle: 'Laba: ${currencyFormat.format(todayProfit)}',
+                      subtitle: 'Cash: ${currencyFormat.format(todayCashRevenue)} | Trf: ${currencyFormat.format(todayTransferRevenue)}',
                       trend: revenueTrend,
                       onTap: () => _showRevenueDetails(context, provider, currencyFormat),
                     ),
@@ -151,7 +159,7 @@ class _DashboardHomeState extends State<DashboardHome> {
                       '$todayCount Transaksi',
                       Icons.shopping_cart,
                       Colors.blue,
-                      subtitle: 'Total: ${provider.transactions.length}',
+                      subtitle: 'Rata-rata: ${currencyFormat.format(todayAvgTransactionValue)}',
                       onTap: () => _showTransactionDetails(context, provider, currencyFormat),
                     ),
                     _buildStatCard(context, 'Terjual', totalPartsSold.toString(), Icons.assignment_turned_in, Colors.purple, onTap: () => _showItemsSoldDetails(context, provider, currencyFormat)),

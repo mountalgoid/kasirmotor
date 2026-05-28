@@ -8,7 +8,7 @@ void main() {
     await tester.pumpWidget(const BengkelProApp());
 
     // Verify splash screen content.
-    expect(find.text('Ibrahim Part'), findsOneWidget);
+    expect(find.text('Bengkel Pro'), findsOneWidget);
 
     // Pump for splash screen delay (3 seconds + some extra)
     await tester.pump(const Duration(seconds: 4));

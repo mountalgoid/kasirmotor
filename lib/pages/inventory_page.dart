@@ -37,7 +37,7 @@ class _InventoryPageState extends State<InventoryPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Manajemen Stok Ibrahim Part'),
+        title: const Text('Manajemen Stok'),
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 16.0),
