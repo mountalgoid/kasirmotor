@@ -13,17 +13,22 @@ class TransactionHistoryPage extends StatelessWidget {
     final currencyFormat = NumberFormat.currency(locale: 'id', symbol: 'Rp ', decimalDigits: 0);
     final dateFormat = DateFormat('dd MMM yyyy, HH:mm');
 
+    final now = DateTime.now();
+    final startOfRange = DateTime(now.year, now.month, now.day).subtract(const Duration(days: 6));
+    final filteredTransactions = provider.transactions.where((tx) =>
+      tx.date.isAfter(startOfRange.subtract(const Duration(seconds: 1)))).toList();
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Riwayat Transaksi'),
+        title: const Text('Riwayat Transaksi (1 Minggu)'),
       ),
-      body: provider.transactions.isEmpty
-          ? const Center(child: Text('Belum ada riwayat transaksi'))
+      body: filteredTransactions.isEmpty
+          ? const Center(child: Text('Belum ada riwayat transaksi dalam 1 minggu terakhir'))
           : ListView.builder(
               padding: const EdgeInsets.all(16),
-              itemCount: provider.transactions.length,
+              itemCount: filteredTransactions.length,
               itemBuilder: (context, index) {
-                final tx = provider.transactions[index];
+                final tx = filteredTransactions[index];
                 return Card(
                   margin: const EdgeInsets.only(bottom: 12),
                   child: ExpansionTile(

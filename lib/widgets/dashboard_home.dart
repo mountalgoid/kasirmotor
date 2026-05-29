@@ -55,7 +55,7 @@ class _DashboardHomeState extends State<DashboardHome> {
 
     double todayRevenue = todayTransactions.fold(0, (sum, tx) => sum + tx.totalAmount);
     double todayProfit = todayTransactions.fold(0, (sum, tx) => sum + tx.totalProfit);
-    int todayCount = todayTransactions.length;
+    int weekCount = weekTransactions.length;
 
     double weekRevenue = weekTransactions.fold(0, (sum, tx) => sum + tx.totalAmount);
     double monthRevenue = monthTransactions.fold(0, (sum, tx) => sum + tx.totalAmount);
@@ -121,8 +121,8 @@ class _DashboardHomeState extends State<DashboardHome> {
                     ),
                     _buildStatCard(
                       context,
-                      'Transaksi Hari Ini',
-                      '$todayCount Transaksi',
+                      'Transaksi Minggu Ini',
+                      '$weekCount Transaksi',
                       Icons.shopping_cart,
                       Colors.blue,
                       subtitle: 'Total: ${provider.transactions.length}',
