@@ -54,17 +54,16 @@ class _ResponsiveWrapperState extends State<ResponsiveWrapper> {
                 padding: EdgeInsets.zero,
                 children: [
                   DrawerHeader(
-                    decoration: BoxDecoration(color: Theme.of(context).colorScheme.primary),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.primary,
+                      borderRadius: const BorderRadius.vertical(bottom: Radius.circular(24)),
+                    ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        CircleAvatar(
-                          radius: 30,
-                          backgroundColor: Theme.of(context).colorScheme.onPrimary,
-                          child: Padding(
-                            padding: const EdgeInsets.all(8),
-                            child: Image.asset('assets/images/logo.png'),
-                          ),
+                        Image.asset(
+                          'assets/images/logo.png',
+                          height: 72,
                         ),
                         const SizedBox(height: 12),
                         Text(
@@ -92,12 +91,9 @@ class _ResponsiveWrapperState extends State<ResponsiveWrapper> {
               extended: MediaQuery.of(context).size.width > 1200,
               leading: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 24),
-                child: CircleAvatar(
-                  backgroundColor: Theme.of(context).colorScheme.primary,
-                  child: Padding(
-                    padding: const EdgeInsets.all(6),
-                    child: Image.asset('assets/images/logo.png'),
-                  ),
+                child: Image.asset(
+                  'assets/images/logo.png',
+                  height: 56,
                 ),
               ),
               destinations: const [
