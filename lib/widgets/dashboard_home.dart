@@ -99,51 +99,25 @@ class _DashboardHomeState extends State<DashboardHome> {
             // Stat Cards
             LayoutBuilder(
               builder: (context, constraints) {
-                final crossAxisCount = constraints.maxWidth < 600 ? 2 : (constraints.maxWidth < 900 ? 2 : 4);
+                final crossAxisCount = constraints.maxWidth < 600 ? 1 : (constraints.maxWidth < 900 ? 2 : 3);
                 return GridView.count(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
                   crossAxisCount: crossAxisCount,
-                  childAspectRatio: constraints.maxWidth < 600 ? 1.3 : 1.7,
+                  childAspectRatio: constraints.maxWidth < 600 ? 2.5 : 1.8,
                   crossAxisSpacing: 16,
                   mainAxisSpacing: 16,
                   children: [
-                    _buildStatCard(
+                    _buildRevenueSummaryCard(
                       context,
-                      'Pendapatan Hari Ini',
-                      currencyFormat.format(todayRevenue),
-                      Icons.today,
-                      Colors.green,
-                      subtitle: 'Laba: ${currencyFormat.format(todayProfit)}',
-                      trend: revenueTrend,
-                      onTap: () => _showRevenueDetails(context, provider, currencyFormat),
-                    ),
-                    _buildStatCard(
-                      context,
-                      'Minggu Ini',
-                      currencyFormat.format(weekRevenue),
-                      Icons.calendar_view_week,
-                      Colors.teal,
-                      subtitle: 'Total Minggu Ini',
-                      onTap: () => _showRevenueDetails(context, provider, currencyFormat),
-                    ),
-                    _buildStatCard(
-                      context,
-                      'Bulan Ini',
-                      currencyFormat.format(monthRevenue),
-                      Icons.calendar_month,
-                      Colors.indigo,
-                      subtitle: 'Total Bulan Ini',
-                      onTap: () => _showRevenueDetails(context, provider, currencyFormat),
-                    ),
-                    _buildStatCard(
-                      context,
-                      'Tahun Ini',
-                      currencyFormat.format(yearRevenue),
-                      Icons.analytics,
-                      Colors.amber[900]!,
-                      subtitle: 'Total Tahun Ini',
-                      onTap: () => _showRevenueDetails(context, provider, currencyFormat),
+                      todayRevenue,
+                      weekRevenue,
+                      monthRevenue,
+                      yearRevenue,
+                      todayProfit,
+                      revenueTrend,
+                      currencyFormat,
+                      provider,
                     ),
                     _buildStatCard(
                       context,
@@ -389,7 +363,20 @@ class _DashboardHomeState extends State<DashboardHome> {
       );
     } else {
       try {
-        final directory = await getApplicationDocumentsDirectory();
+        Directory? directory;
+        if (Platform.isAndroid) {
+          directory = Directory('/storage/emulated/0/Download');
+          if (!await directory.exists()) {
+            directory = await getExternalStorageDirectory();
+          }
+        } else if (Platform.isIOS) {
+          directory = await getApplicationDocumentsDirectory();
+        } else {
+          directory = await getDownloadsDirectory();
+        }
+
+        directory ??= await getApplicationDocumentsDirectory();
+
         final path = '${directory.path}/laporan_bengkel_${DateFormat('yyyyMMdd').format(DateTime.now())}.csv';
         final file = File(path);
         await file.writeAsString(csv);
@@ -713,6 +700,116 @@ class _DashboardHomeState extends State<DashboardHome> {
           Text(value, style: TextStyle(fontWeight: isBold ? FontWeight.bold : FontWeight.normal, color: color)),
         ],
       ),
+    );
+  }
+
+  Widget _buildRevenueSummaryCard(
+    BuildContext context,
+    double todayRevenue,
+    double weekRevenue,
+    double monthRevenue,
+    double yearRevenue,
+    double todayProfit,
+    double? trend,
+    NumberFormat format,
+    WorkshopProvider provider,
+  ) {
+    return Card(
+      elevation: 0,
+      color: Colors.green.withOpacity(0.05),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: BorderSide(color: Colors.green.withOpacity(0.1)),
+      ),
+      child: InkWell(
+        onTap: () => _showRevenueDetails(context, provider, format),
+        borderRadius: BorderRadius.circular(16),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(6),
+                    decoration: BoxDecoration(color: Colors.green.withOpacity(0.1), borderRadius: BorderRadius.circular(8)),
+                    child: const Icon(Icons.account_balance_wallet, color: Colors.green, size: 18),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      'Ringkasan Pendapatan',
+                      style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7), fontSize: 10, fontWeight: FontWeight.w600),
+                    ),
+                  ),
+                  if (trend != null)
+                    Icon(
+                      trend >= 0 ? Icons.trending_up : Icons.trending_down,
+                      size: 14,
+                      color: trend >= 0 ? Colors.green : Colors.red,
+                    ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Expanded(
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Text('Hari Ini', style: TextStyle(fontSize: 9, color: Colors.grey)),
+                          FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: Text(format.format(todayRevenue), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                          ),
+                          Text('Laba: ${format.format(todayProfit)}', style: const TextStyle(fontSize: 9, color: Colors.green, fontWeight: FontWeight.w500)),
+                        ],
+                      ),
+                    ),
+                    VerticalDivider(width: 24, color: Colors.green.withOpacity(0.2)),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          _summaryRow('Minggu', weekRevenue, format),
+                          const SizedBox(height: 4),
+                          _summaryRow('Bulan', monthRevenue, format),
+                          const SizedBox(height: 4),
+                          _summaryRow('Tahun', yearRevenue, format),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _summaryRow(String label, double value, NumberFormat format) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(label, style: const TextStyle(fontSize: 9, color: Colors.grey)),
+        const SizedBox(width: 8),
+        Expanded(
+          child: Text(
+            format.format(value),
+            textAlign: TextAlign.right,
+            style: const TextStyle(fontSize: 9, fontWeight: FontWeight.bold),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+      ],
     );
   }
 
